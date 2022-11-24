@@ -1,4 +1,4 @@
-﻿/*    1、某班期末考试科目为数学（MT）、英语（EN）和物理（PH），有最多不超过30人参加考试。考试后要求：
+/*    1、某班期末考试科目为数学（MT）、英语（EN）和物理（PH），有最多不超过30人参加考试。考试后要求：
 （1）计算每个学生的总分和平均分；
 （2）按总分成绩由高到低排出成绩的名次；
 （3）打印出名次表，表格内包括学生编号、各科分数、总分和平均分；
@@ -8,12 +8,23 @@
 #include <iostream>
 using namespace std;
 
-int stuID[30], mathScore[30], engScore[30], phyScore[30], averageScore[30], fullScore[30], temp, i, j, k;
+int stuID[31], mathScore[31], engScore[31], phyScore[31], averageScore[31], fullScore[31], highestScore;
 
 int showIntel(int j)
 {
     cout << "\nStudent ID: " << stuID[j] << "\nMath score: " << mathScore[j] << "\nEnglish Score:" << engScore[j] << "\nPhysic Score:" << phyScore[j] << "\nFull mark:" << fullScore[j] << "\nAverage:" << averageScore[j] << "\n---------------------";
     return(j);
+}
+
+int switcher(int from, int to)
+{
+    stuID[to] = stuID[from];
+    mathScore[to] = mathScore[from];
+    engScore[to] = engScore[from];
+    phyScore[to] = phyScore[from];
+    averageScore[to] = averageScore[from];
+    fullScore[to] = fullScore[from];
+    return(fullScore[to]);
 }
 
 int main()
@@ -29,20 +40,17 @@ int main()
         cin >> j;
         if (j == 1) break;
     }
-    temp = 0;
+
     for (j = 1; j <= i; j++)
     {
+        highestScore = fullScore[j];
         for (k = j; k <= i; k++)
         {
-            if (fullScore[k] < temp)
+            if (fullScore[k] < highestScore)
             {
-                temp = fullScore[k];
-                stuID[j] = stuID[k];
-                mathScore[j] = mathScore[k];
-                engScore[j] = engScore[k];
-                phyScore[j] = phyScore[k];
-                averageScore[j] = averageScore[k];
-                fullScore[j] = fullScore[k];
+                switcher(k, 31);
+                switcher(j, k);
+                highestScore = switcher(31, j);
             }
         }
     }
