@@ -36,7 +36,7 @@ int main()
         cin >> stuID[i] >> mathScore[i] >> engScore[i] >> phyScore[i];
         fullScore[i] = engScore[i] + mathScore[i] + phyScore[i];
         averageScore[i] = fullScore[i] / 3;
-        cout << i << "/30 student(s) has been input." << endl << "Input “1” to finish the input process,else input anything: ";
+        cout << i << "/30 student(s) had been input." << endl << "Input “1” to finish the input process,else input anything: ";
         cin >> j;
         if (j == 1) break;
     }
