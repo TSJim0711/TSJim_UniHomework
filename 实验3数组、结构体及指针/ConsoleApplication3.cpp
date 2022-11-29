@@ -1,18 +1,19 @@
-﻿// ConsoleApplication3.cpp : 此檔案包含 'main' 函式。程式會於該處開始執行及結束執行。
-//
+/*2、编写一个程序，用结构表示一个学生的信息，每个学生的信息包括：学号、姓名、三门成绩。要求从键盘输入学生的数据，并输出成绩表（包括每个学生的学号、姓名、三门成绩及平均分数），并输出平均分在前3名的学生的姓名及平均分。*/
 
 #include <iostream>
 #include <vector>
 using namespace std;
 
-vector<vector<int>>stu(6, vector<int>(1, 0));
+vector<vector<char>>stuName(1, vector<char>(30,48));
+vector<vector<int>>stu(6, vector<int>(1,0));
+
 
 int debugDisplay()
 {
-	for (int m = 0; m <stu.size(); m++)
+	for (int m = 0; m <stuName.size(); m++)
 	{
-		for (int n = 0; n < stu[m].size(); n++)
-			cout << stu[m][n] << " ";
+		for (int n = 0; n < stuName[m].size(); n++)
+			cout << stuName[m][n] << " ";
 		cout << endl;
 	}
 	cout << "\n---------------------\n";
@@ -22,7 +23,11 @@ int debugDisplay()
 int display(int target)
 {
 	cout << "\nStudentID:" << stu[0][target];
-	cout << "\nName:" << stu[1][target];
+	cout << "\nName:";
+	for (int i = 0; i <= 28; i++)
+	{
+		cout<<stuName[target][i];
+	}
 	cout << "\nSubject 1 mark:" << stu[2][target];
 	cout << "\nSubject 2 mark:" << stu[3][target];
 	cout << "\nSubject 3 mark:" << stu[4][target];
@@ -34,11 +39,18 @@ int display(int target)
 int main()
 {
 	int rank[4], i, j, k;                                                                     //输入
-	cout << "\n---------------------\n";
+	char temp[30] = { 32 };
 	for (i=0; i == i; i++)
 	{
+		debugDisplay();
 		cout << "StudentID:"; cin >> stu[0][i];
-		cout << "Name:"; cin >> stu[1][i];
+		cout << "Name (Max 26 bit):"; cin >> temp;
+		for (j = 0; j <= 28; j++)
+		{
+			stuName[stuName.size()-1][j] = temp[j];
+
+		}
+		debugDisplay();
 		cout << "Subject 1 mark:"; cin >> stu[2][i];
 		cout << "Subject 2 mark:"; cin >> stu[3][i];
 		cout << "Subject 3 mark:"; cin >> stu[4][i];
@@ -52,6 +64,9 @@ int main()
 		{
 			stu[j].resize(stu[j].size() + 1);
 		}
+		stuName.resize(stu[0].size());
+		stuName[stuName.size()-1].resize(30);
+		cout << "AA:" << stuName.size() << "AA";
 		debugDisplay();
 	}
 
@@ -80,10 +95,14 @@ int main()
 	}
 	cout << "\n--------------------\nAll student you input are printed, and students with top 3 average mark  were shown below.\n--------------------";
 
-	for (j = 1 ; j <= 3; j++)
+	for (j = 1 ; j <= 3; j++)                                         //输出首3
 	{
-		cout<<"Name:" << stu[1][rank[j]];
-		cout << "Average mark:" << stu[5][rank[j]];
+		for (k = 0; k <= 28; k++)
+		{
+			cout << stuName[k][i];
+		}
+		cout << "\nAverage mark:" << stu[5][rank[j]];
+		cout << "\n--------------------";
 	}
 	/*for (j = 0; j <= 2; j++)
 	{
@@ -96,16 +115,4 @@ int main()
 		}
 	}
 	*/
-
 }
-
-// 執行程式: Ctrl + F5 或 [偵錯] > [啟動但不偵錯] 功能表
-// 偵錯程式: F5 或 [偵錯] > [啟動偵錯] 功能表
-
-// 開始使用的提示: 
-//   1. 使用 [方案總管] 視窗，新增/管理檔案
-//   2. 使用 [Team Explorer] 視窗，連線到原始檔控制
-//   3. 使用 [輸出] 視窗，參閱組建輸出與其他訊息
-//   4. 使用 [錯誤清單] 視窗，檢視錯誤
-//   5. 前往 [專案] > [新增項目]，建立新的程式碼檔案，或是前往 [專案] > [新增現有項目]，將現有程式碼檔案新增至專案
-//   6. 之後要再次開啟此專案時，請前往 [檔案] > [開啟] > [專案]，然後選取 .sln 檔案
