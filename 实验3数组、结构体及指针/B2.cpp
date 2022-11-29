@@ -42,22 +42,19 @@ int main()
 	char temp[30] = { 32 };
 	for (i=0; i == i; i++)
 	{
-		debugDisplay();
 		cout << "StudentID:"; cin >> stu[0][i];
 		cout << "Name (Max 26 bit):"; cin >> temp;
 		for (j = 0; j <= 28; j++)
 		{
 			stuName[stuName.size()-1][j] = temp[j];
-
 		}
-		debugDisplay();
 		cout << "Subject 1 mark:"; cin >> stu[2][i];
 		cout << "Subject 2 mark:"; cin >> stu[3][i];
 		cout << "Subject 3 mark:"; cin >> stu[4][i];
 		stu[5][i] = (stu[1][i] + stu[2][i] + stu[3][i]) / 3;
-		cout <<"--------------------\n" << i + 1 << "student intel had been input." << "\nIf you want to finish the input process, input '1', else input anything:";
+		cout <<"--------------------\n" << i + 1 << " student(s) info had been input." << "\nIf you want to finish the input process, input '1', else input anything:";
 		cin >> j;
-		cout << "--------------------";
+		cout << "--------------------\n";
 		if (j == 1)
 			break;
 		for (j = 0; j < 6; j++)
@@ -66,8 +63,6 @@ int main()
 		}
 		stuName.resize(stu[0].size());
 		stuName[stuName.size()-1].resize(30);
-		cout << "AA:" << stuName.size() << "AA";
-		debugDisplay();
 	}
 
 	rank[1] = 0;
@@ -91,15 +86,16 @@ int main()
 		{
 			rank[3] = j;
 		}
-		cout << rank[1] << " " << rank[2] << " " << rank[3];
 	}
 	cout << "\n--------------------\nAll student you input are printed, and students with top 3 average mark  were shown below.\n--------------------";
 
 	for (j = 1 ; j <= 3; j++)                                         //输出首3
 	{
+		cout << "\nTOP:"<<j;
+		cout << "\nName:";
 		for (k = 0; k <= 28; k++)
 		{
-			cout << stuName[k][i];
+			cout << stuName[rank[j]][k];
 		}
 		cout << "\nAverage mark:" << stu[5][rank[j]];
 		cout << "\n--------------------";
