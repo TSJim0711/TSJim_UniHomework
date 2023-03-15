@@ -1,0 +1,43 @@
+#include <iostream>
+#include <sstream>
+using namespace std;
+class student
+{
+public:
+	static int total, Count;
+	static void scoretotalcount(int mark)
+	{
+		total = total + mark;
+		Count++;
+	};
+	static int sum()
+	{
+		return total;
+	};
+	static int average()
+	{
+		return (total / Count);
+	};
+};
+
+int student::total = 0;
+int student::Count = 0;
+
+int main()
+{
+	string container;
+	double ship;
+	while (true)
+	{
+	dataentering:
+		cout << "Input score: ";
+		cin >> container;
+		if (!(stringstream(container) >> ship))
+			{
+				cout << "Data rejected, it may not be a valid number.\a\n";
+				goto dataentering;
+			}
+		student::scoretotalcount(ship);
+		cout << "Now total Score:  " <<student::sum()<<"\nCurrent average: " << student::average();
+	}
+}
