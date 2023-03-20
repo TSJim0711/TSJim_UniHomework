@@ -1,0 +1,40 @@
+int transformer (int input)
+{
+    switch (input)
+    {
+        case 73:
+        return 1;
+        case 86:
+        return 5;
+        case 88:
+        return 10;
+        case 76:
+        return 50;
+        case 67:
+        return 100;
+        case 68:
+        return 500;
+        case 77:
+        return 1000;
+    }
+    return 0;
+}
+
+class Solution {
+public:
+    int romanToInt(string s) 
+    {
+        int ans = 0, lastLargest = 0;
+        for(int i = s.size() ; i>=0  ; i--)
+        {
+            if(transformer(s[i]) >= lastLargest)
+            {
+                ans= ans + transformer(s[i]);
+                lastLargest = transformer(s[i]);
+            } 
+            else
+                ans= ans - transformer(s[i]);
+        }
+        return ans;
+    }
+};
