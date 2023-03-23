@@ -1,0 +1,86 @@
+/*建立一个复数类imaginary，其私有数据成员x和y表示复数的实部和虚部，构造函数imaginary用于对复数的实部和虚部初始化，
+友员函数add,sub,mul和div分别用于进行复数的加、减、乘和除法运算，静态函数show用于显示运算结果。
+在主函数中，实例化两个复数，并输入一个运算符，按运算符选择相应的友员函数进行复数运算，然后输出运算结果。*/
+
+#include <iostream> 
+using namespace std;
+class imaginary
+{
+public:
+	void input();
+	void add();
+	void sub();
+	void mul();
+	void div();
+	void show();
+private:
+	int x, y, xb, yb;
+};
+
+void imaginary::input()
+{
+	char syb;
+	cout << "第一个复数 x :";	cin >> x;
+	cout << "第一个复数 y :"; cin >> y;
+	cout << "第二个复数 x :";	cin >> xb;
+	cout << "第二个复数 y :"; cin >> yb;
+	sybSet:
+	cout << "输入运算符 ( + ) ( - ) ( * ) ( / )" << endl << "( " << x << " + " << y << " i )   ( " << xb << " + " << yb << " i )";
+	for (int i = 13 + int(log10(xb)) + int(log10(yb)); i > 0; i--)
+		cout << "\b";
+	cin >> syb;
+	switch (syb)
+	{
+		case '+':
+			add();
+			break;
+		case '-':
+			sub();
+			break;
+		case '*':
+			mul();
+			break;
+		case '/':
+			div();
+			break;
+		default:
+			cout << "输入错误，请重新输入" << endl;
+			goto sybSet;
+	}
+	show();
+}
+
+void imaginary::add()
+{
+	x = x + xb;
+	y = y + yb;
+}
+
+void imaginary::sub()
+{
+	x = x - xb;
+	y = y - yb;
+}
+
+void imaginary::mul()
+{
+	x = x * xb - y * yb;
+	y = x * yb + y * xb;
+}
+
+void imaginary::div()
+{
+	x = (x * xb + y * yb) / (xb * xb + yb * yb);
+	y = (y * xb - x * yb) / (xb * xb + yb * yb);
+}
+
+void imaginary::show()
+{
+	cout << "结果为：" << x << " + " << y << " i" << endl;
+}
+
+int main() 
+{
+	imaginary img;
+	img.input();
+}
