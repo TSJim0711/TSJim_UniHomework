@@ -1,0 +1,161 @@
+#include <iostream>
+#include <vector>
+#include <sstream>
+using namespace std;
+
+vector <int> vecA, vecB;
+
+class Vector
+{
+public:
+	friend vector<int> operator+(const vector<int>&, const vector<int>&);
+	friend vector<int> operator-(const vector<int>&, const vector<int>&);
+	friend double operator*(const vector<int>&, const vector<int>&);
+	friend ostream& operator<<(ostream& output, const Vector&);
+	friend istream& operator>>(istream& input, Vector&);
+	//Code from text book
+};
+
+//输出
+ostream& operator << (ostream& output, const vector<int> & vecTarget)
+{
+	for(int i = 0; i< vecTarget.size() ;i++)
+		output<<vecTarget[i]<<", ";
+	return output;
+}
+
+//输入
+istream& operator >>(istream& input, vector<int>& vecTarget)
+{
+	string tube;	
+	for (int i = 0; true; i++)
+	{
+		DataEnter:
+		input >> tube;
+		//判断是否为Y，是Y就到此为止，只有在第二回起才判断
+		if (i != 0 && tube == "Y")
+			break;
+		//是否为数字
+		else if (!isdigit(tube[0]))
+		{
+			cout<<"It's not a valid No.  or a \"Y\", please input again."<<endl;
+			goto DataEnter;
+		}else
+			vecTarget.resize(i+1);
+		//因为要判断是否Y所以不能是int，因为存在>2位数，不能用char
+		stringstream ss (tube);
+		ss>>vecTarget[i];
+		cout<<"The vector size is "<<i+1<<". End inputting? Type\"Y\" to end, else continue your input: "<<endl;
+	}
+	return input;
+}
+
+//加
+vector<int> operator+(const vector<int>& vecLHS, const vector<int>& vecRHS)
+{
+	vector<int> vecResultTemp;
+	for (int i = 0; i < vecLHS.size(); i++)
+	{
+		vecResultTemp.resize(i+1);
+		vecResultTemp[i] = (vecLHS[i] + vecRHS[i]);
+	}
+	return vecResultTemp;
+}
+
+//减
+vector<int> operator-(const vector<int>& vecLHS, const vector<int>& vecRHS)
+{
+	vector<int> vecResultTemp;
+	for (int i = 0; i < vecLHS.size(); i++)
+	{
+		vecResultTemp.resize(i + 1);
+		vecResultTemp[i] = (vecLHS[i] -  vecRHS[i]);
+	}
+	return vecResultTemp;
+}
+
+//乘，但为什么课本不用int呢？
+double operator*(const vector<int>& vecLHS, const vector<int>& vecRHS)
+{
+	double dResultTemp = 0;
+	for (int i = 0; i < vecLHS.size(); i++)
+	{
+		dResultTemp += (vecLHS[i] * vecRHS[i]);
+	}
+	return dResultTemp;
+}
+
+void furtherOperate()
+{
+	int todo;
+	vector<char> target(4);
+	vector<int>* to, * from, * by;
+	while (true)
+	{
+		cout << "So, what is your next move? Enter serial No. to execute.\n1 |\tCauculation\n2 |\tPrint Vector\nSerial No.:[   ]\b\b\b";
+		cin >> todo;
+		switch (todo)
+		{
+		case 1:
+			cout << "Vector (To) = Vector (From)  (With)  Vector (By)" << endl;
+			cout << "To (A/B) :"; cin >> target[0];
+			cout << "From (A/B) :"; cin >> target[1];
+			cout << "With (+/-/*) :"; cin >> target[3];
+			cout << "By (A/B) :"; cin >> target[2];
+			cout << "Foemular [ Vector " << target[0] << " = Vector " << target[1] <<" " << target[3] << " Vector " << target[2] << " ] ";
+			//判断是否合理输入
+			if ((target[0] == 'A' || target[0] == 'B') && (target[1] == 'A' || target[1] == 'B') && (target[2] == 'A' || target[2] == 'B') || (target[3] == '+' || target[3] == '-' || target[3] == '*'))
+			{
+				//赋予目标，主要是因为A-B !=B-A
+				if (target[0] == 'A')
+					to = &vecA;
+				else
+					to = &vecB;
+				if (target[1] == 'A')
+					from = &vecA;
+				else
+					from = &vecB;
+				if (target[2] == 'A')
+					by = &vecA;
+				else
+					by = &vecB;
+				//判断加减乘
+				switch (target[3])
+				{
+				case '+':
+					*to = *from + *by;
+					break;
+				case '-':
+					*to = *from - *by;
+					break;
+				case '*':
+					double timesResult = (*from * *by);
+					vector<double>vecA(1, timesResult);
+					break;
+				}
+				cout << "had been cumputed."<<endl;
+			}
+			else
+				cout << "would not be cumputed. Reason: Invalid input." << endl;
+			break;
+			case 2:
+				cout << "Vector A: { " << vecA << "}" << endl;
+				cout << "Vector B: { " << vecB << "}" << endl;
+				break;
+			default:
+				cout<<"An unexpected error occurred";
+				break;
+		}
+	}			
+}
+
+int main()
+{
+	//为vectorA和B输入data
+	cout << "Build your Vector A." << endl;
+	cin >> vecA;
+	cout << "Build your Vector B." << endl;
+	cin >> vecB;
+	//goto↑
+	furtherOperate();
+}
