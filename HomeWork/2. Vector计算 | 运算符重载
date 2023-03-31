@@ -15,9 +15,10 @@ vector <int> vecA, vecB;
 class Vector
 {
 public:
+	Vector &operator=(Vector &);
 	friend vector<int> operator+(const vector<int>&, const vector<int>&);
 	friend vector<int> operator-(const vector<int>&, const vector<int>&);
-	friend double operator*(const vector<int>&, const vector<int>&);
+	friend vector<int> operator*(const vector<int>&, const vector<int>&);
 	friend ostream& operator<<(ostream& output, const Vector&);
 	friend istream& operator>>(istream& input, Vector&);
 	//Code from text book
@@ -45,7 +46,7 @@ istream& operator >>(istream& input, vector<int>& vecTarget)
 		//是否为数字
 		else if (!isdigit(tube[0]))
 		{
-			cout<<"It's not a valid No.  or a \"Y\", please input again."<<endl;
+			cout<<"It's neither a valid No. nor a \"Y\", please input again."<<endl;
 			goto DataEnter;
 		}else
 			vecTarget.resize(i+1);
@@ -82,19 +83,20 @@ vector<int> operator-(const vector<int>& vecLHS, const vector<int>& vecRHS)
 }
 
 //乘，但为什么课本不用int呢？
-double operator*(const vector<int>& vecLHS, const vector<int>& vecRHS)
+vector<int> operator*(const vector<int>& vecLHS, const vector<int>& vecRHS)
 {
-	double dResultTemp = 0;
+	vector<int> vecResultTemp;
 	for (int i = 0; i < vecLHS.size(); i++)
 	{
-		dResultTemp += (vecLHS[i] * vecRHS[i]);
+		vecResultTemp.resize(i + 1);
+		vecResultTemp[i] = (vecLHS[i] * vecRHS[i]);
 	}
-	return dResultTemp;
+	return vecResultTemp;
 }
 
 void furtherOperate()
 {
-	int todo;
+	char todo;
 	vector<char> target(4);
 	vector<int>* to, * from, * by;
 	while (true)
@@ -103,7 +105,7 @@ void furtherOperate()
 		cin >> todo;
 		switch (todo)
 		{
-		case 1:
+		case '1':
 			cout << "Vector (To) = Vector (From)  (With)  Vector (By)" << endl;
 			cout << "To (A/B) :"; cin >> target[0];
 			cout << "From (A/B) :"; cin >> target[1];
@@ -111,7 +113,7 @@ void furtherOperate()
 			cout << "By (A/B) :"; cin >> target[2];
 			cout << "Foemular [ Vector " << target[0] << " = Vector " << target[1] <<" " << target[3] << " Vector " << target[2] << " ] ";
 			//判断是否合理输入
-			if ((target[0] == 'A' || target[0] == 'B') && (target[1] == 'A' || target[1] == 'B') && (target[2] == 'A' || target[2] == 'B') || (target[3] == '+' || target[3] == '-' || target[3] == '*'))
+			if ((target[0] == 'A' || target[0] == 'B') && (target[1] == 'A' || target[1] == 'B') && (target[2] == 'A' || target[2] == 'B') && (target[3] == '+' || target[3] == '-' || target[3] == '*'))
 			{
 				//赋予目标，主要是因为A-B !=B-A
 				if (target[0] == 'A')
@@ -136,22 +138,22 @@ void furtherOperate()
 					*to = *from - *by;
 					break;
 				case '*':
-					double timesResult = (*from * *by);
-					vector<double>vecA(1, timesResult);
+					*to = *from * *by;
 					break;
+
 				}
 				cout << "had been cumputed."<<endl;
 			}
 			else
 				cout << "would not be cumputed. Reason: Invalid input." << endl;
 			break;
-			case 2:
-				cout << "Vector A: { " << vecA << "}" << endl;
-				cout << "Vector B: { " << vecB << "}" << endl;
-				break;
-			default:
-				cout<<"An unexpected error occurred";
-				break;
+		case '2':
+			cout << "Vector A: { " << vecA << "}" << endl;
+			cout << "Vector B: { " << vecB << "}" << endl;
+			break;
+		default:
+			cout<<"No route to \""<<todo<<"\", only \"1\"or\"2\" is accept.";
+			break;
 		}
 	}			
 }
