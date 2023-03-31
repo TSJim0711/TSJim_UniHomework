@@ -1,3 +1,10 @@
+/*3. 假设有向量X= (x1,x2,...,xn)和Y=(y1,y2,...,y),它们之间的加、减、乘运算分别定义为:
+X+Y= (x1+ y₁, x2 + y2,***, Xn+Yn)
+X-Y= (x-y1, X2-Y2,***, Xn-yn)
+X Y=x₁ y₁+ X2 Y2 +*+ xn Yn 
+编写程序定义向量类 Vector,重载运算符+、-、*和=,
+实现向量之间的加、减、乘和赋值运算:重载 运算符>>、<<实现向量的输入、输出功能。注意检测运算的合法性。*/
+
 #include <iostream>
 #include <vector>
 #include <sstream>
