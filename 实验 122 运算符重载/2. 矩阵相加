@@ -1,3 +1,5 @@
+/*编写程序，有两个均为3行3列的矩阵ml和m2，求两个矩阵之和。
+重载运算符“＋”、“>>”和“<<”，使之能用于矩阵相加、输入和输出。*/
 #include <iostream>
 using namespace std;
 
@@ -32,16 +34,16 @@ using namespace std;
 		return in;
 	}
 
-	matrix operator+(matrix mtxA)
+	matrix operator+(matrix mtxL, matrix mtxR)
 	{
 		for (int i = 0; i <= 2; i++)
 		{
 			for (int j = 0; j <= 2; j++)
 			{
-				mtxA.mtxA[i][j] = mtxA.mtxA[i][j] + mtxB.mtxB[i][j];
+				mtxL.mtxA[i][j] = mtxL.mtxA[i][j] + mtxR.mtxB[i][j];
 			}
 		}
-		return mtxA;
+		return mtxL;
 	}
 
 	ostream& operator<<(ostream& out, matrix&mtx)
