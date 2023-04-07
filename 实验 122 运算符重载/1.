@@ -1,44 +1,24 @@
-#include  <iostream>
-#include<windows.h>
+/*1、以下是Point类的定义以及重载运算符“<<”和“>>”的算法的基本实现。请增加重载运算符“+”等的实现，必要时可能需要相应修改重载运算符“<<”和“>>”的实现。请对增加的实现功能和修改之处做适当说明。*/
 
+#include  <iostream>
 using namespace std;
 class Point
 {
     int x, y;
 public:
-
+    Point() {};
     friend istream& operator >> (istream& in, Point& p);    //重载运算符">>"
     friend ostream& operator << (ostream& out, Point& p);  //重载运算符"<<"
     friend Point operator+(const Point& lhs, const Point& rhs);
-    friend Point operator-(const Point& lhs, const Point& rhs);
     friend Point operator*(const Point& lhs, const Point& rhs);
-    friend Point operator/(const Point& lhs, const Point& rhs);
 };
-    int *xloc, *yloc;
 istream& operator >> (istream& in, Point& p)
 {
-    inputX:
     cout << "请输入x, y的值：" << endl;
     cout << "x＝";
-    if (!(in >> p.x))
-    {
-		in.clear();
-		in.sync();
-		cout << "Input rejected. Reson: Data overflow would occur." << endl;
-		goto inputX;
-	}
-    inputY:
+    in >> p.x;
     cout << "y＝";
-    if (!(in >> p.y))
-    {
-        in.clear();
-        in.sync();
-        cout << "Input rejected. Reson: Data Overflow would occur." << endl;
-        goto inputY;
-    }
-    xloc=&p.x;
-    cout << xloc<<endl<<&p.x << endl;
-    yloc=&p.y;
+    in >> p.y;
     return in;
 }
 ostream& operator << (ostream& out, Point& p)
@@ -48,92 +28,30 @@ ostream& operator << (ostream& out, Point& p)
     return out;
 }
 
-void compute()
+Point operator+(const Point& apt, const Point& bpt)
 {
-    char formular[4];
-    int *loc[3];
-
-        cout << "Set up a formular to operate." << endl;
-        cout << " (To) =  (From)  (With)  (By)" << endl;
-        cout << "To ( [x] / [y] ) :"; cin >> formular[0];
-        cout << "From ( [x] / [y] ) :"; cin >> formular[1];
-        cout << "With ( [+] / [-] / [*] / [/] ) :"; cin >> formular[3];
-        cout << "By ( [x] / [y]) :"; cin >> formular[2];
-        cout << "Foemular [ " << formular[0] << " = " << formular[1] << " " << formular[3] << formular[2] << " ] ";
-        if (((formular[0] == 'x' || formular[0] == 'y') && (formular[1] == 'x' || formular[1] == 'y') && (formular[2] == 'x' || formular[2] == 'y') && (formular[3] == '+' || formular[3] == '-' || formular[3] == '*' || formular[3] == '÷')));
-        {
-			cout << "would not be compute. Reason: Invalid formular." << endl;
-
-		}
-        if (formular[0] == 'x')
-            loc[0] = xloc;
-        else loc[0] = yloc;   
-        if (formular[1] =='x')
-			loc[1]  =xloc;
-		else loc[1]  =yloc;
-        if (formular[2] == 'x')
-            loc[2] = xloc;
-        else loc[2] = yloc;
-
-        switch (formular[3])
-        {
-        case '+':
-            *loc[0] = *loc[1] + *loc[2];
-            break;
-        case '-':
-            *loc[0] = *loc[1] - *loc[2];
-            break;
-        case '*':
-            *loc[0] = *loc[1] * *loc[2];
-			break;
-        case '/':
-	    	*loc[0] = *loc[1] / *loc[2];
-	    	break;
-        }
-    
-}
-
-Point operator+(const Point& lhs, const Point& rhs)
-{
-    cout << "plus." << endl;
-    Point temp;
-    temp = lhs + rhs;
-	return temp;
-}
-
-Point operator-(const Point& lhs, const Point& rhs)
-{
-    cout << "minus." << endl;
 	Point temp;
-	temp = lhs - rhs;
+	temp.x = apt.x + bpt.x;
+	temp.y = apt.y + bpt.y;
 	return temp;
 }
 
-Point operator*(const Point& lhs, const Point& rhs)
+Point operator*(const Point& apt, const Point& bpt)
 {
-    cout << "times." << endl;
-    Point temp;
-    temp = lhs * rhs;
-    return temp;
+	Point temp;
+	temp.x = apt.x * bpt.x;
+	temp.y = apt.y * bpt.y;
+	return temp;
 }
 
-Point operator/(const Point& lhs, const Point& rhs)
-{
 
-    Point temp;
-    if (rhs.x == 0 || rhs.y == 0)
-    {
-		cout << "Divisor can not be zero." << endl;
-		return temp;
-	}
-    temp = lhs / rhs;
-    return temp;
-}
 
 int main()
 {
     Point P;
     cin >> P;
-    compute();
+    P=P+P;
+    cout << P;
+    P = P * P;
     cout << P;
 }
