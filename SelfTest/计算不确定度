@@ -3,17 +3,20 @@
 using namespace std;
 int main()
 {
-	double a, b, c, d, e, f, uncertt, avg, uA, uB,uC;
-	cout << "1.";cin >> a;
-	cout << "2."; cin >> b;
-	cout << "3."; cin >> c;
-	cout << "4."; cin >> d;
-	cout << "5."; cin >> e;
-	cout << "6."; cin >> f;
-	cout << "誤差："; cin >> uncertt;
-	avg = (a + b + c + d + e + f) / 6;
-	uA = sqrt((pow(a - avg, 2) + pow(b - avg, 2) + pow(c - avg, 2) + pow(d - avg, 2) + pow(e - avg, 2) + pow(f - avg, 2)) / (6 / (6 - 1)));
-	uB = uncertt / sqrt(3);
-	uC = sqrt(pow(uA, 2) + pow(uB, 2));
-	cout << "平均值：" << avg << "\nA類分量：" << uA << "\nB類分量：" << uB << "\n合成不確定度：" << uC;
+	while (true)
+	{
+		double a, b, c, d, e, f, uncertt, avg, uA, uB,uC;
+		cout << "1.";cin >> a;
+		cout << "2."; cin >> b;
+		cout << "3."; cin >> c;
+		cout << "4."; cin >> d;
+		cout << "5."; cin >> e;
+		cout << "6."; cin >> f;
+		cout << "誤差："; cin >> uncertt;
+		avg = (a + b + c + d + e + f) / 6;
+		uA = sqrt((pow(a - avg, 2) + pow(b - avg, 2) + pow(c - avg, 2) + pow(d - avg, 2) + pow(e - avg, 2) + pow(f - avg, 2)) / (6 / (6 - 1)));
+		uB = uncertt / sqrt(3);
+		uC = sqrt(pow(uA, 2) + pow(uB, 2));
+		cout << "平均值：" << avg << "\nA類分量：" << uA << "\nB類分量：" << uB << "\n合成不確定度：" << uC;
+	}
 }
