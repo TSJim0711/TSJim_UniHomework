@@ -1,0 +1,99 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+class RMB
+{
+protected:
+    void newMemRMB();
+    void deposit(int, int);
+    void spending(int, int);
+    int balcPrint(int);
+private:
+    vector<int> balance;
+};
+
+void RMB::newMemRMB()
+{
+    balance.resize(balance.size() + 1);
+    balance[balance.size() - 1] = 0;
+}
+
+void RMB::deposit(int id, int amount)
+{
+    id--;
+    balance[id] = balance[id] + amount;
+}
+
+void RMB::spending(int id, int amount)
+{
+    id--;
+    if (amount < balance[id])
+        balance[id] = balance[id] - amount;
+    else
+        cout << "Not enough money.";
+}
+int RMB::balcPrint(int id)
+{
+    return balance[id - 1];
+}
+
+class member
+{
+protected:
+    void showMem(int);
+    void editIntel(int, bool);
+    void newMem();
+    member() :memIntel(4) {};
+private:
+    vector<vector<string>> memIntel;
+};
+
+void member::showMem(int id)
+{
+    id--;
+    cout << "Member ID: " << memIntel[id][0];
+    cout << "Name: " << memIntel[id][1];
+    cout << "Password : " << memIntel[id][2];
+    cout << "Phone No.: " << memIntel[id][3];
+}
+
+void member::editIntel(int id, bool newMem)
+{
+    vector<string> tempIntel(3);
+    if (newMem)
+        cout << "Enter member intel:";
+    else
+        cout << "Input NOTHING if you want data remain unchange.";
+    dataEnter:
+    cout << "Name: "; cin >> tempIntel[0];
+    cout << "Password: "; cin >> tempIntel[1];
+    cout << "PhoneNo.: "; cin >> tempIntel[2];
+    if ((tempIntel[0].empty() || tempIntel[1].empty() || tempIntel[2].empty()) && newMem)
+    {
+        cout << "Any intel should not be blank. Please re-enter.";
+        goto dataEnter;
+    }
+    for (int i = 0; i <= 2; i++)
+        if(!tempIntel[i].empty())
+        memIntel[id - 1][i + 1] = tempIntel[i];
+}
+
+void member::newMem()
+{
+    memIntel.resize(memIntel.size() + 1);
+    memIntel[memIntel.size() - 1].resize(4);
+    memIntel[memIntel.size() - 1][0] = memIntel.size();
+    editIntel(memIntel.size(), 1);
+}
+
+class memberCar :RMB, member
+{
+
+};
+
+int main()
+{
+    std::cout << "Hello World!\n";
+}
