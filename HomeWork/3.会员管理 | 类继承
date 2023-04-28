@@ -12,7 +12,6 @@ protected:
     void spending(int, int);
     void record(int,int,int);
     void showrecord();
-    int balcPrint(int);
 private:
     vector<int> balance;
     vector<vector<int>> footprint;
@@ -73,10 +72,6 @@ void RMB::showrecord()
         cout <<"\t\t"<<footprint[i][2] << endl;
     }
     cout << "Deposit received: " << crdinc << "\tAccual income: " << accinc << endl;
-}
-int RMB::balcPrint(int id)
-{
-    return balance[id - 1];
 }
 
 class member
@@ -147,7 +142,6 @@ bool member::validPasswd(int id, string passwd)
         cout << "Invalid password.\n";
         return 0;
     }
-
 }
 class memberCar :RMB, member
 {
@@ -224,7 +218,6 @@ int main()
             default:
                 cout << "Please only key in [1] , [2] , [3] or [4]\n";
                 break;
-            
         }
     }
 }
