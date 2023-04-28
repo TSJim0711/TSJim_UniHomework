@@ -1,0 +1,230 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+class RMB
+{
+protected:
+    void newMemRMB();
+    void deposit(int, int);
+    void spending(int, int);
+    void record(int,int,int);
+    void showrecord();
+    int balcPrint(int);
+private:
+    vector<int> balance;
+    vector<vector<int>> footprint;
+};
+
+void RMB::newMemRMB()
+{
+    balance.resize(balance.size() + 1);
+    balance[balance.size() - 1] = 0;
+}
+
+void RMB::deposit(int id, int amount)
+{
+    balance[id-1] = balance[id - 1] + amount;
+    record(id, 1, amount);
+    cout << "Account balance: " << balcPrint(id)<<endl;
+}
+
+void RMB::spending(int id, int amount)
+{
+    if (amount < balance[id-1])
+    {
+        balance[id-1] = balance[id-1] - amount;
+        record(id, 0, amount);
+        cout << "Account balance: " << balcPrint(id)<<endl;
+    }
+
+    else
+        cout << "Not enough money.";
+}
+void RMB::record(int id, int isDeposit, int amout)
+{
+    footprint.resize(footprint.size() + 1);
+    footprint[footprint.size() - 1].resize(3);
+    footprint[footprint.size() - 1][0] = id;
+    footprint[footprint.size() - 1][1] = isDeposit;
+    footprint[footprint.size() - 1][2] = amout;
+}
+
+void RMB::showrecord()
+{
+    int crdinc = 0, accinc = 0;
+    cout << "Number of member: " << balance.size();
+    cout << "\nRevenue table\nMember ID\tOperation\tAmout\n";
+    for (int i = 0; i <= footprint.size()-1; i++)
+    {
+        cout << footprint[i][0] << "\t\t";
+        if (footprint[i][1] == 1)
+        {
+            cout << "Deposit";
+            crdinc += footprint[i][2];
+        }
+        else
+        {
+            cout << "Spent";
+            accinc += footprint[i][2];
+        }
+        cout <<"\t\t"<<footprint[i][2] << endl;
+    }
+    cout << "Deposit received: " << crdinc << "\tAccual income: " << accinc << endl;
+}
+int RMB::balcPrint(int id)
+{
+    return balance[id - 1];
+}
+
+class member
+{
+protected:
+    void showMem(int);
+    void editIntel(int, bool);
+    void newMem();
+    bool validID(int);
+    bool validPasswd(int, string);
+private:
+    vector<vector<string>> memIntel;
+};
+
+void member::showMem(int id)
+{
+    id--;
+    cout << "Member ID: " << memIntel[id][0];
+    cout << "Name: " << memIntel[id][1];
+    cout << "Password : " << memIntel[id][2];
+    cout << "Phone No.: " << memIntel[id][3];
+}
+
+void member::editIntel(int id, bool newMem)
+{
+    vector<string> tempIntel(3);
+    if (newMem)
+        cout << "Enter member info for Member ID "<<id<<" .\n";
+    else
+        cout << "Input NOTHING if you want data remain unchange.";
+dataEnter:
+    cout << "Name: "; cin >> tempIntel[0];
+    cout << "Password: "; cin >> tempIntel[1];
+    cout << "PhoneNo.: "; cin >> tempIntel[2];
+    if ((tempIntel[0].empty() || tempIntel[1].empty() || tempIntel[2].empty()) && newMem)
+    {
+        cout << "You should input all data. Please re-enter.";
+        goto dataEnter;
+    }
+    for (int i = 0; i <= 2; i++)
+        if (!tempIntel[i].empty())
+            memIntel[id - 1][i + 1] = tempIntel[i];
+}
+
+void member::newMem()
+{
+    memIntel.resize(memIntel.size() + 1);
+    memIntel[memIntel.size()-1].resize(4);
+    memIntel[memIntel.size() - 1][0] = memIntel.size();
+    editIntel(memIntel.size(), 1);
+}
+
+bool member::validID(int id)
+{
+    if (memIntel.size() >= id)
+        return 1;
+    else
+    {
+        cout<< "Invalid Member ID. ";
+        return 0;
+    }
+}
+
+bool member::validPasswd(int id, string passwd)
+{
+    if (memIntel[id - 1][2] != passwd)
+    {
+        cout << "Invalid password.\n";
+        return 0;
+    }
+
+}
+class memberCar :RMB, member
+{
+public:
+    void newMember();
+    void spending();
+    void deposit();
+    void prtRC();
+};
+
+void memberCar::newMember()
+{
+    newMem();
+    newMemRMB();
+}
+
+void memberCar::spending()
+{
+    int tempID, tempAmt;
+    string passwd;
+    cout << "Customer ID:";cin >> tempID;
+    if (validID(tempID))
+    {
+        cout << "Password:"; cin >> passwd;
+        if (validPasswd(tempID, passwd))
+        { 
+            cout << "Amout:"; cin >> tempAmt;
+            RMB::spending(tempID, tempAmt);
+        }
+    }
+}
+
+void memberCar::deposit()
+{
+    int tempID,tempAmt;
+    cout << "Customer ID:"; cin >> tempID;
+    if (validID(tempID))
+    {
+        cout << "Amout:"; cin >> tempAmt;
+        RMB::deposit(tempID, tempAmt);
+    }
+    else
+        cout << "Not a valid ID, or correct password.\n";
+}
+
+void memberCar::prtRC()
+{
+   int tempID;
+   RMB::showrecord();
+}
+
+int main()
+{
+    memberCar mbc;
+    char opNo;
+    while (true)
+    {
+        cout << "Op No.\tOperation\n[1]\tRegist new member\n[2]\tMember Spending\n[3]\tMember Deposit\n[4]\tPrint Accounting Table\nKey in Operation Number here:[ ]\b\b";
+        cin >> opNo;
+        switch (opNo)
+        {
+            case '1':
+                mbc.newMember();
+                break;
+            case '2':
+                mbc.spending();
+                break;
+            case '3':
+                mbc.deposit();
+                break;
+            case '4':
+                mbc.prtRC();
+                break;
+            default:
+                cout << "Please only key in [1] , [2] , [3] or [4]\n";
+                break;
+            
+        }
+    }
+}
