@@ -7,32 +7,33 @@ using namespace std;
 class RMB
 {
 protected:
-    void newMemRMB();
-    void deposit(int, int);
-    void spending(int, int);
-    void record(int,int,int);
-    void showrecord();
+    void newMemRMB();       //有新用户时扩容
+    void deposit(int, int);        //充值
+    void spending(int, int);    //消费
+    void record(int,int,int);     //记录充值和消费
+    void showrecord();          //显示记录
+    int balcPrint(int);             //显示余额
 private:
-    vector<int> balance;
-    vector<vector<int>> footprint;
+    vector<int> balance;    //余额
+    vector<vector<int>> footprint;      //充值和消费记录
 };
 
 void RMB::newMemRMB()
 {
-    balance.resize(balance.size() + 1);
+    balance.resize(balance.size() + 1);         //扩容，定新用户钱为0
     balance[balance.size() - 1] = 0;
 }
 
-void RMB::deposit(int id, int amount)
+void RMB::deposit(int id, int amount)                          //充值
 {
     balance[id-1] = balance[id - 1] + amount;
     record(id, 1, amount);
     cout << "Account balance: " << balcPrint(id)<<endl;
 }
 
-void RMB::spending(int id, int amount)
+void RMB::spending(int id, int amount)                      //消费
 {
-    if (amount < balance[id-1])
+    if (amount < balance[id-1])                            //检测够不够钱
     {
         balance[id-1] = balance[id-1] - amount;
         record(id, 0, amount);
@@ -42,18 +43,18 @@ void RMB::spending(int id, int amount)
     else
         cout << "Not enough money.";
 }
-void RMB::record(int id, int isDeposit, int amout)
+void RMB::record(int id, int isDeposit, int amout)              //记录
 {
     footprint.resize(footprint.size() + 1);
     footprint[footprint.size() - 1].resize(3);
-    footprint[footprint.size() - 1][0] = id;
-    footprint[footprint.size() - 1][1] = isDeposit;
-    footprint[footprint.size() - 1][2] = amout;
+    footprint[footprint.size() - 1][0] = id;                            //用户id
+    footprint[footprint.size() - 1][1] = isDeposit;                 //加钱减钱？
+    footprint[footprint.size() - 1][2] = amout;                     //多少钱？
 }
 
-void RMB::showrecord()
+void RMB::showrecord()                                                      //显示历史
 {
-    int crdinc = 0, accinc = 0;
+    int crdinc = 0, accinc = 0;                                               //信用收入和实际收入
     cout << "Number of member: " << balance.size();
     cout << "\nRevenue table\nMember ID\tOperation\tAmout\n";
     for (int i = 0; i <= footprint.size()-1; i++)
@@ -61,7 +62,7 @@ void RMB::showrecord()
         cout << footprint[i][0] << "\t\t";
         if (footprint[i][1] == 1)
         {
-            cout << "Deposit";
+            cout << "Deposit";                                                 //充值就是信用收入，反之亦然
             crdinc += footprint[i][2];
         }
         else
@@ -71,13 +72,17 @@ void RMB::showrecord()
         }
         cout <<"\t\t"<<footprint[i][2] << endl;
     }
-    cout << "Deposit received: " << crdinc << "\tAccual income: " << accinc << endl;
+    cout << "Deposit received: " << crdinc << "\tAccual income: " << accinc << endl;        //收入计总
+}
+int RMB::balcPrint(int id)                                                  //显示余额
+{
+    return balance[id - 1];
 }
 
 class member
 {
 protected:
-    void showMem(int);
+    void showMem(int);                                                      
     void editIntel(int, bool);
     void newMem();
     bool validID(int);
@@ -86,7 +91,7 @@ private:
     vector<vector<string>> memIntel;
 };
 
-void member::showMem(int id)
+void member::showMem(int id)                                     //我也不知道有什么用，书上说要输出信息的功能...
 {
     id--;
     cout << "Member ID: " << memIntel[id][0];
@@ -95,7 +100,7 @@ void member::showMem(int id)
     cout << "Phone No.: " << memIntel[id][3];
 }
 
-void member::editIntel(int id, bool newMem)
+void member::editIntel(int id, bool newMem)               //会员信息修改
 {
     vector<string> tempIntel(3);
     if (newMem)
@@ -106,46 +111,47 @@ dataEnter:
     cout << "Name: "; cin >> tempIntel[0];
     cout << "Password: "; cin >> tempIntel[1];
     cout << "PhoneNo.: "; cin >> tempIntel[2];
-    if ((tempIntel[0].empty() || tempIntel[1].empty() || tempIntel[2].empty()) && newMem)
+    if ((tempIntel[0].empty() || tempIntel[1].empty() || tempIntel[2].empty()) && newMem)       //新会员必须有信息
     {
         cout << "You should input all data. Please re-enter.";
         goto dataEnter;
     }
-    for (int i = 0; i <= 2; i++)
+    for (int i = 0; i <= 2; i++)                                                    //载入信息进数组储存
         if (!tempIntel[i].empty())
             memIntel[id - 1][i + 1] = tempIntel[i];
 }
 
-void member::newMem()
+void member::newMem()                                                     //新会员
 {
-    memIntel.resize(memIntel.size() + 1);
+    memIntel.resize(memIntel.size() + 1);                               //数组扩容
     memIntel[memIntel.size()-1].resize(4);
     memIntel[memIntel.size() - 1][0] = memIntel.size();
-    editIntel(memIntel.size(), 1);
+    editIntel(memIntel.size(), 1);                                              //为新会员输入信息
 }
 
-bool member::validID(int id)
+bool member::validID(int id)                                                //判断是否存在id，因为用不存在的id访问数组程序将报错卡死
 {
     if (memIntel.size() >= id)
         return 1;
     else
     {
-        cout<< "Invalid Member ID. ";
+        cout<< "Invalid Member ID.\n";
         return 0;
     }
 }
 
-bool member::validPasswd(int id, string passwd)
+bool member::validPasswd(int id, string passwd)             //判断密码正确？
 {
     if (memIntel[id - 1][2] != passwd)
     {
         cout << "Invalid password.\n";
         return 0;
     }
+
 }
-class memberCar :RMB, member
+class memberCar :RMB, member                                     
 {
-public:
+public: 
     void newMember();
     void spending();
     void deposit();
@@ -162,10 +168,10 @@ void memberCar::spending()
 {
     int tempID, tempAmt;
     string passwd;
-    cout << "Customer ID:";cin >> tempID;
+    cout << "Customer ID:";cin >> tempID;                                   //先判断是否存在id
     if (validID(tempID))
     {
-        cout << "Password:"; cin >> passwd;
+        cout << "Password:"; cin >> passwd;                                     //在看密码，才能扣钱
         if (validPasswd(tempID, passwd))
         { 
             cout << "Amout:"; cin >> tempAmt;
@@ -174,7 +180,7 @@ void memberCar::spending()
     }
 }
 
-void memberCar::deposit()
+void memberCar::deposit()                                                           //类似
 {
     int tempID,tempAmt;
     cout << "Customer ID:"; cin >> tempID;
@@ -183,13 +189,10 @@ void memberCar::deposit()
         cout << "Amout:"; cin >> tempAmt;
         RMB::deposit(tempID, tempAmt);
     }
-    else
-        cout << "Not a valid ID, or correct password.\n";
 }
 
-void memberCar::prtRC()
+void memberCar::prtRC()                                                             //输出营业额表格
 {
-   int tempID;
    RMB::showrecord();
 }
 
@@ -198,7 +201,7 @@ int main()
     memberCar mbc;
     char opNo;
     while (true)
-    {
+    {//菜单
         cout << "Op No.\tOperation\n[1]\tRegist new member\n[2]\tMember Spending\n[3]\tMember Deposit\n[4]\tPrint Accounting Table\nKey in Operation Number here:[ ]\b\b";
         cin >> opNo;
         switch (opNo)
