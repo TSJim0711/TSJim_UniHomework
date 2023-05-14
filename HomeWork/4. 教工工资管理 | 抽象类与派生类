@@ -1,0 +1,172 @@
+#include <iostream>
+#include <vector>
+
+
+using namespace std;
+class people
+{
+public:
+    void newpple();
+    void editSalary(int);
+    virtual void printSalary(int) const = 0;
+    int get(int, int) const;
+    int shell(int,int);
+    bool validIDCheck(int);
+private:
+    vector <vector<int>>ppleInfo;
+};
+
+void people::newpple()          //有新人员时，为他们扩容vector
+{
+    int temptitle;                      //确定人员职位
+    cout << "[1]\tProfessor\n[2]\tVice-Professor\n[3]\tTeacher\n[4]\tAdministrators\n[5]\tLab\nSelect his/her title [ ]\b\b";
+    cin >> temptitle;
+    ppleInfo.resize(ppleInfo.size() + 1);
+    ppleInfo[ppleInfo.size() - 1].resize(2);
+    ppleInfo[ppleInfo.size() - 1][0] = temptitle;
+    ppleInfo[ppleInfo.size() - 1][1] = 0;
+    cout << "He / She had assigned with ID:" << ppleInfo.size()<< endl;    //从1开始分配id
+}
+
+void people::editSalary(int id)	 //编辑人员信息,关于人员的工作时间或者工作天数
+{
+    int tempinfo;
+    if (ppleInfo[id - 1][0] <= 3)
+        cout << "Related person's origenal teaching hours(s) is " << ppleInfo[id - 1][1] << " hours, teaching hour(s) would be edit to: ";
+    else if (ppleInfo[id - 1][0] == 5)
+        cout << "Related person's origenal working day(s) is " << ppleInfo[id - 1][1] << " days, working day(s) would be edit to: ";
+    else cout << "Related person's salary is not related to working hours or days.";
+    cin >> tempinfo;
+    ppleInfo[id - 1][1] = tempinfo;         //将新的工作时/天写入vector
+}
+
+bool people::validIDCheck(int id)           //检查输入的id是否合法
+{
+    if (id > ppleInfo.size() && id <=0)
+    {
+        cout << "Invalid ID\n";
+        return false;
+    }
+    else return true;
+}
+
+int people::get(int vecLocX, int vecLocY)const         //获取vector中的信息，因为他们在private
+{
+    cout << "vector rage:" << vecLocX << " " << vecLocY << endl;
+return ppleInfo[vecLocX][vecLocY];
+}
+
+class teacher :public people       //教师
+{
+public:
+    void printSalary(int id) const 
+    {
+        cout<<"id is "<<id<<"\n";
+        teacher tc;
+        int title = this -> get(0, 0), addition=this -> get(0,1);
+        if (title == 1)        //不同教师有不同的教学补贴
+            addition = addition * 50;
+        else if (title == 2)
+            addition = addition *30;
+        else
+            addition = addition * 10;
+        cout << "ID: " << id << "\nBasic Salary: ￥" << 8500 << "\nAddition Salary: ￥" << addition << "\nTotal salary: ￥" << 8500 + addition;
+    }
+};
+
+class adminer :public people            //管理人员
+{
+public:
+    void printSalary(int id) const override
+    {
+        cout << "ID: " << id << "\nBasic Salary: ￥" << 5500 << "\n职务工资: ￥" << 4500 << "\nTotal salary: ￥" << 5000 + 4500;
+    }
+};
+
+class laber :public people              //实验室的人
+{
+public:
+    void printSalary(int id) const override
+    {
+        int addition = this->get(0, 1) * 70;
+        laber lab;
+        cout << "ID: " << id << "\nBasic Salary: ￥" << 5500 << "\nAddition Salary: ￥" << addition << "\nTotal salary: ￥" << 5500 + addition;
+    }
+};
+
+
+/*              已弃用，异质链表实在没有头绪，
+class SalaryTable
+{
+    SalaryTable(const int, const int);
+    virtual ~SalaryTable();
+    const int getID() const;
+    const int getTotalSalary() const;
+    SalaryTable* next;
+    void addFront(SalaryTable*& h, SalaryTable*& t);
+    void inject();
+protected:
+    int id;
+    int totalSalary;
+};
+
+void SalaryTable::addFront(SalaryTable*& h, SalaryTable*& t)
+{
+    t->next = h;
+    h = t;
+}
+
+void SalaryTable::inject()
+{
+    SalaryTable* head = NULL, * ptr;
+    ptr = new SalaryTable(71, 771);         //data just for testing
+    addFront(head, ptr);
+    ptr = new SalaryTable(77, 77);
+    addFront(head, ptr);
+    ptr = head;
+    while (ptr)
+    {
+        cout << ptr->getID() << " " << ptr->getTotalSalary() << endl;
+        ptr = ptr->next;
+    }
+}
+*/
+
+int main()
+{
+    teacher tc;
+    adminer ad;
+    laber lab;
+    int serialNo, id;
+    while (true)
+    {
+        cout << "Main manu\n[1]\tAdd new people.\n[2]\tEdit related person's working hours / days.\n[3]\tPrint person salary tape\nSerial No.: [ ]\b\b";
+        cin >> serialNo;
+        switch (serialNo)
+        {
+        case 1:
+            tc.newpple();
+            break;
+        case 2:
+            cout << "Enter ID: "; cin >> id;        //修改员工工作时/天
+            if (tc.validIDCheck(id))
+                tc.editSalary(id);
+            break;
+        case 3:
+            cout << "Enter ID: "; cin >> id;		//输出员工工资条
+            if (tc.validIDCheck(id))
+            {
+                if (tc.get(id - 1, 0) >= 1 && tc.get(id - 1, 0) <= 3)
+                {
+                    tc.printSalary(id);}else if (lab.get(id - 1, 0) == 4)
+                {
+                        ad.printSalary(id);}
+                else{lab.printSalary(id);}
+            }
+            break;
+        default:
+            cout << "Please enter correct serial no.";
+            break;
+        }
+    }
+}
