@@ -38,23 +38,23 @@ public:
     void graduate(int);
     virtual void print(int loc)
     {
-        if (loc)
+        if (loc)//函数有时会得到0数值，意味用户输入不存在id，当时当刻便可跳过输出步骤
         {
             fstream file(filename);
             int currLoc = 0;
-            loc = (loc - 1) * 5 + 1;
-            for (; currLoc < loc; currLoc++)
+            loc = (loc - 1) * 5 + 1;//确定文件指针目的地
+            for (; currLoc < loc; currLoc++)//前往目的地的首
                 getline(file, cstringDataCache);
-            for (; currLoc < loc + 5; currLoc++)
+            for (; currLoc < loc + 5; currLoc++)//此for用于输出一学生的数据
             {
                 cstringDataCache.clear();
                 getline(file, cstringDataCache);
                 cout << cstringDataCache << endl;
             }
             convIntString.clear();
-            convIntString << cstringDataCache.substr(11);
-            convIntString >> cintDataCache;
-            (cstringDataCache == "Exam Score:(X)") ? cout << "Not enough intel to determine passing or losing." : ((cintDataCache > ScoreRq) ? cout << "Student passing" : cout << "Student failing");
+            convIntString << cstringDataCache.substr(11);//获取学生exam mark，判断在当前情况下学生能否毕业
+            convIntString >> cintDataCache;//<-转换为可以计算的数字
+            (cintDataCache > ScoreRq) ? cout << "Student passing" : cout << "Student failing";
             file.close();
         }
         else
@@ -65,7 +65,7 @@ public:
 class graduate:public course
 {
 public:
-virtual void print(int loc) {
+virtual void print(int loc) {//一样是输出数据，但是为毕业学生打造，原理无异
     cout << "We value students’ personal privacy and thoroughly delete all their personal data when they graduate.\nType \"exit\" to exit :)  :";
     cin >> cstringDataCache;
     if (cstringDataCache=="admin")
@@ -99,13 +99,13 @@ virtual void print(int loc) {
 };
 
 
-course::course()
+course::course()//course的构造函数，凡打开程序时都会执行，用于确定文件名与环境初始化
 {
-    if (filename[0] == '\0')
+    if (filename[0] == '\0')//student和graduate时都会执行course构造函数，但只需要一次，第二次filename将不会是空
     {
         cout << "Data file name:";
         cin >> filename;
-        strcat_s(filename, sizeof(filename), ".txt");
+        strcat_s(filename, sizeof(filename), ".txt");//加上.txt，让文件成为文字档
         outstuf.open(filename, ios::_Nocreate);
         if (!outstuf)       //如果文件不存在，就加上这行文字，因为_Nocreate只能开启已有文件。
         {
@@ -115,20 +115,20 @@ course::course()
         outstuf.close();
         fstream readFile(filename);
         int currPointer = 1;
-        for (int i = 0; i < ttpp(); i++)
+        for (int i = 0; i < ttpp(); i++)//输入id和是否毕业入vector
         {
-            for (; currPointer != (i * 5 + 3); currPointer++)
+            for (; currPointer != (i * 5 + 3); currPointer++)//移文件指针至id
             {
                 getline(readFile, cstringDataCache);
                 //cout << "Test Data:" << cstringDataCache << endl;
             }
             //cout <<"Data:" << cstringDataCache.substr(10) << endl;
-            convIntString << cstringDataCache.substr(10);
+            convIntString << cstringDataCache.substr(10);//转换string成int，因为vector被声明int
             convIntString >> cintDataCache;
             convIntString.clear();
-            idIndex.push_back({ cintDataCache, 1 });
+            idIndex.push_back({ cintDataCache, 1 });//预设为所有学生未毕业，是否毕业后面决定
             //cout << i << " :" << idIndex[i][0] << endl;
-            for (; currPointer != (i * 5 + 6); currPointer++)
+            for (; currPointer != (i * 5 + 6); currPointer++)//移文件指针至status
             {
                 getline(readFile, cstringDataCache);
                 //cout << "Test Data:" << cstringDataCache << endl;
@@ -143,7 +143,7 @@ course::course()
             //    cout << endl;
             //}
         }
-        readFile.close();
+        readFile.close();//手尾
     }
 }
 
@@ -163,11 +163,11 @@ int course::idLoc(int id)
     int loc=0;
     for (int i = 0; i < idIndex.size(); i++)
         if (idIndex[i][0] == id)
-            loc = i+1;
+            loc = i+1;//loc为id的位置/顺序，如果没有找到便不会赋值，便会返回0
     return loc;
 }
 
-void students::newStu()                                                           //新学生
+void students::newStu()//新学生
 {
     course::stuInfoStruct stuStc;
 IDinput:
@@ -214,8 +214,8 @@ void students::mark()
             pos += temp.size() + 2;
             //cout <<"pos:"<< pos << endl;
         }
-        getline(file, cstringDataCache);
-        getline(file, temp);
+        getline(file, cstringDataCache);//在此获取name
+        getline(file, temp);//temp和temp2.size()用于输入pos
         getline(file, temp2);
         currentLine += 3;
         //cout << temp2;
@@ -240,7 +240,7 @@ void students::graduate(int scoreRqLocal)
     //cin >> scoreRq;
     for (int i = 0,j=1; i < ttpp(); i++)
     {
-            for (; j != i * 3 + 5; j++)
+            for (; j != i * 3 + 5; j++)//移动文件读指针至state，并同步写指针的函数pos
             {
                 getline(rFile, dump);
                 pos = pos + dump.size() + 2;
@@ -249,7 +249,7 @@ void students::graduate(int scoreRqLocal)
             }
             getline(rFile, cstringDataCache);
             //cout << "Cstring:" << cstringDataCache<<endl;
-            if (cstringDataCache == "Status: Student"|| cstringDataCache == "Status:Re-Study")
+            if (cstringDataCache == "Status: Student"|| cstringDataCache == "Status:Re-Study")//如果是学生或重读生，才进入核心程序
             {
                 getline(rFile, cstringDataCache);
                 convIntString << cstringDataCache.substr(12);
@@ -257,13 +257,13 @@ void students::graduate(int scoreRqLocal)
                 convIntString.clear();
                 wFile.seekg(pos);
                 //cout <<"Cstring:"<< cstringDataCache.substr(12)<< "Cint:" << cintDataCache<<endl;
-                if (cintDataCache >= scoreRqLocal)
+                if (cintDataCache >= scoreRqLocal)//如果分数>=所需分数则状态定为毕业
                 {
                     wFile.write( "Status:Graduate",15);
                     idIndex[i][1] = 0;
                     //cout << "pos:" << pos << endl;
                 }
-                else wFile.write( "Status:Re-Study",15);
+                else wFile.write( "Status:Re-Study",15);//不足分数就状态定为重修
             }
             pos += 33;
         //cout << "i:" << i << "j:" << j << ":" << 5cstringDataCache << endl;
@@ -302,8 +302,7 @@ int main()
             break;
         case '4':
         Enter:
-            cout << "Comfirm course end?\nAll student(s) score over " << stu.ScoreRq << " would be graduate from course.\nOp.No.\t\tOperation\n[Y]\t\tComfirm course end\n[1]\t\tEdit passing score.\n[Any key]\tBack to manu.\n";
-            cout << "Operation No:";
+            cout << "Comfirm course end?\nAll student(s) score over " << stu.ScoreRq << " would be graduate from course.\nOp.No.\t\tOperation\n[Y]\t\tComfirm course end\n[1]\t\tEdit passing score.\n[Any key]\tBack to manu.\nOperation No: ";
             cin >> opno;
             if(opno=='Y')
                 stu.graduate(stu.ScoreRq);
