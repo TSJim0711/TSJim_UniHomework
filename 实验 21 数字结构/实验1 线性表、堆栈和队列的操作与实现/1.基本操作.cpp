@@ -1,14 +1,15 @@
 #include <iostream>
+#include <ctime>
 
 using namespace std;
 typedef int DataType;
 struct SNode
 {
     DataType  data;//数据域
-    struct SNode *next;//后继节点指针
+    struct SNode* next;//后继节点指针
 };
 
-void InitStack(SNode *&top)
+void InitStack(SNode*& top)
 {
     top = NULL;
 }
@@ -20,15 +21,15 @@ bool StackEmpty(SNode* top)
     else return false;
 }
 
-int Push(SNode *top, DataType item)
+int Push(SNode** top, DataType item)
 {
-    SNode *temp;
+    SNode* temp;
     temp = (SNode*)malloc(sizeof(SNode));
     if (temp == NULL)
         return 0;
     temp->data = item;
-    temp->next = top;
-    top = temp;
+    temp->next = *top;
+    *top = temp;
     return 1;
 }
 
@@ -43,7 +44,7 @@ int Pop(SNode* top, DataType& item)
     return 1;
 }
 
-int GetTop(SNode* top, DataType& item) 
+int GetTop(SNode* top, DataType& item)
 {
     if (StackEmpty(top))
         return 0;
@@ -55,10 +56,18 @@ void Destroy(SNode*& top)
 {
     SNode* temp;
     while (top != NULL)
-        ...
+    {
+        temp = top;
+        top = top->next;
+        free(temp);
+    }
 }
 
 int main()
 {
-    
+    SNode* top;
+    DataType item=10;
+    InitStack(top);
+    Push(&top, item);
+    GetTop(top, item);
 }
