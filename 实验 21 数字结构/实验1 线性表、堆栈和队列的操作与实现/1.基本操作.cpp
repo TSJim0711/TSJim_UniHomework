@@ -65,7 +65,7 @@ void Destroy(SNode*& top)
 
 int main()
 {
-    SNode* top,* current;
+    SNode* top,* current,*B4Current;
     DataType item=10;
     InitStack(top);
     int op, userInput, userInput2;
@@ -153,6 +153,33 @@ int main()
             }
             cout << endl;
             break;
+        case 4:
+            current = top;
+            B4Current = current;
+            cout << "Input your number (integers only) : ";
+            if (!(cin >> userInput))
+            {
+                cout << "Input rejected. Integers only";
+                break;
+            }
+            for (int i = 1; current != NULL; i++)
+            {
+                if (current->data == userInput)
+                {
+                    cout << "Found! In " << i << ", it was deleted." << endl;
+                    B4Current->next = current->next;
+                    B4Current = current;
+                    temp = current;
+                    current = current->next;
+                    free(temp);
+                }
+                else
+                {
+                    B4Current = current;
+                    current = current->next;
+                }
+
+            }
         default: 
             cout << "Input rejected, invalid operation code."<<endl;
             break;
