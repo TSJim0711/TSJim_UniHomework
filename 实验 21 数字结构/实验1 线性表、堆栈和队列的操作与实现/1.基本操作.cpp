@@ -43,13 +43,13 @@ int Push(SNode** top, DataType item)
     return 1;
 }
 
-int Pop(SNode* top, DataType& item)
+int Pop(SNode** top, DataType& item)
 {
-    if (StackEmpty(top))
+    if (StackEmpty(*top))
         return 0;
-    SNode* temp = top;
+    SNode* temp = *top;
     item = temp->data;
-    top = temp->next;
+    *top = temp->next;
     free(temp);
     return 1;
 }
@@ -76,7 +76,6 @@ void Destroy(SNode*& top)
 int main()
 {
     SNode* top,* current,*B4Current,*AfterCurrent;
-    DataType item=10;
     InitStack(top);
     int op, userInput, userInput2;
     //随机数入链表
