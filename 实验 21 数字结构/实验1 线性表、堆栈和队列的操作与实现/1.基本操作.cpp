@@ -82,7 +82,7 @@ int main()
     srand(time(0));
     for (int i = 1; i <= 10; i++)
         Push(&top, rand() % 900 + 100);
-    //Manu
+    //Menu
     while (true)
     {
         cout << "Input\tOperation\n[1]\tPrint Stack\n[2]\tStack lookup\n[3]\tInsert data & print\n[4]\tDelete data & print\n[5]\tFlip stack & print\nOperation [ ]\b\b";
