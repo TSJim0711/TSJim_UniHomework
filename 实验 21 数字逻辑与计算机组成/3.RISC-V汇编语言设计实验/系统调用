@@ -1,0 +1,16 @@
+.data
+ stringName: .ascii "请输入姓名："
+ empty: .word 0
+ stringID: .ascii "请输入学号："
+.text
+la, a0, stringName 
+li a7,4
+ecall
+li a7,8
+ecall
+addi a4,a0,0
+la, a0, stringID
+li a7,4
+ecall
+li a7,5
+ecall
