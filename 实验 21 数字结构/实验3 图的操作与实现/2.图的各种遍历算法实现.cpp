@@ -2,8 +2,8 @@
 //https://i.imgur.com/yLYlBwr.png
 //or
 //https://picst.sunbangyan.cn/2023/12/08/85d12090f67bb291159191e49de77e58.jpeg
-
 #include <iostream>
+
 
 using namespace std;
 
@@ -103,13 +103,13 @@ AdjGraph* createAdjGraph(int* graphRq)
     return mainTrunk;
 }
 
-void depthSearchAdjGraph(AdjGraph* grf)
+void depthFSAdjGraph(AdjGraph* grf)
 {
     VNode *currentNode = &grf->adjlist[0];
     ANode *nextNode;
     searchStack *searchStkRoot = NULL, * searchStkNode;
     int spottedCount = 0, i;//记录已发现多少节点，存粹空间换时间
-    bool* visited = new bool[grf->n];//设立发现节点表，所有色味false，即未发现
+    bool* visited = new bool[grf->n];//设立发现节点表，所有设为false，即未发现
     memset(visited, 0, sizeof(bool) * grf->n);
     while(spottedCount < grf->n )
     {
@@ -117,12 +117,19 @@ void depthSearchAdjGraph(AdjGraph* grf)
         visited[currentNode->data] = true;//汇报当前节点已发现
         spottedCount++;
         nextNode = currentNode->firstarc;
-        if (spottedCount < grf->n)//代表已历遍图，可以结束。
+        if (spottedCount >= grf->n)//代表已历遍图，可以结束。
+        {
+            while (searchStkRoot!=NULL)//销毁寻找路线栈
+            {
+                searchStkNode = searchStkRoot;
+                searchStkRoot = searchStkRoot->postNode;
+                free(searchStkNode);
+            }
             return;
+        }
         rollBack:
         while ((nextNode != NULL && visited[nextNode->adjvex]))
         {
-            if (nextNode->nextarc != NULL)
                 nextNode = nextNode->nextarc;
         }
         if(nextNode != NULL)
@@ -137,14 +144,53 @@ void depthSearchAdjGraph(AdjGraph* grf)
         }
         else //代表无路可走，需要回退。
         {
+            for (i = 0; grf->adjlist[i].data != searchStkRoot->data; i++)//定位searchStkRoot->data对应的adjlist[i].firstarc
+                cout;
+            nextNode = grf->adjlist[i].firstarc;//回退一个节点
             searchStkNode = searchStkRoot;
             searchStkRoot = searchStkRoot->postNode;
-            free(searchStkNode);
-            nextNode = grf->adjlist[searchStkRoot->data].firstarc;//回退一个节点
+            free(searchStkNode);//出栈无路可走的当前节点
             goto rollBack;//回退一个节点进行判断
         }
         cout << ", ";
     }
+}
+
+void breadthFSAdjGraph(AdjGraph* grf)
+{
+    VNode* currentSeek = &grf->adjlist[0];
+    ANode* nextSeek;
+    int i = 0, spottedCount = 0;
+    bool* visited = new bool[grf->n];
+    memset(visited, 0, sizeof(bool) * grf->n);
+    bool* node2NodeValid = new bool[grf->n];
+    bool* node2NodeValidStore = new bool[grf->n];
+    memset(node2NodeValid, 0, sizeof(bool) * grf->n);
+    do
+    {
+        for (int k = 0; k < grf->n; k++)
+                node2NodeValidStore[k] = node2NodeValid[k];
+        for(int j=0;j<grf->n;j++)
+        {
+            if ((node2NodeValidStore[j] && !(visited[j])) || spottedCount == 0)
+            {
+                for (i = 0; grf->adjlist[i].data != j; i++)//定位currentSeek->data对应的adjlist[i].data
+                    cout;
+                currentSeek = &grf->adjlist[i];
+                cout << currentSeek->data << ((spottedCount < 6) ? ", " : "");
+                visited[currentSeek->data] = true;
+                node2NodeValid[currentSeek->data] = false;
+                nextSeek = currentSeek->firstarc;
+                while (nextSeek != NULL)
+                {
+                    if (!visited[nextSeek->adjvex])
+                        node2NodeValid[nextSeek->adjvex] = true;
+                    nextSeek = nextSeek->nextarc;
+                }
+                spottedCount++;
+            }
+        }
+    }while (spottedCount < grf->n);
 }
 
 void destroyAdjGraph(AdjGraph* grf)
@@ -177,6 +223,8 @@ int main()
     int graphRequest[9][3] = { 0,1,28,6,4,24,1,2,16,2,3,12,3,4,22,4,5,25,5,0,10,1,6,14,6,3,18 }; //{线路节点，线路节点，线路权重}
     AdjGraph* grf;
     grf = createAdjGraph(*graphRequest);
-    depthSearchAdjGraph(grf);
+    depthFSAdjGraph(grf);
+    cout << endl;
+    breadthFSAdjGraph(grf);
     destroyAdjGraph(grf);
 }
