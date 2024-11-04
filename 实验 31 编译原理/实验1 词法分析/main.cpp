@@ -42,7 +42,7 @@ vector<wordCells> wordList =
 { "[",28 },
 { "]",29 },
 { "{",30 },
-{ "},",31 },
+{ "}",31 },
 { ",",32 },
 { ":",33 },
 { ";",34 },
@@ -72,7 +72,7 @@ vector<wordCells> wordCodePend(string inptWrd)
     istringstream isString(inptWrd);
     int tempInt; string tempString;
 
-    if (inptWrd.front() == inptWrd.back() == '\"')//是string，当被""包围
+    if (inptWrd.front() == '\"')//是string，由引号开始
         return { {inptWrd,50 } };
 
     for (int curWordCode = 0; curWordCode < 9; curWordCode++)//是关键字，关键字结束于9行
@@ -129,6 +129,43 @@ vector<wordCells> wordCodePend(string inptWrd)
     return { {inptWrd,10 } }; //乱七八糟的只能是人起的参数名了,所以包含带下划线的标识符
 }
 
+bool validSyntax(vector<wordCells>inptArray)
+{
+    bool validSyntaxFlag=true;
+    vector<int> bracketNest;
+    for (int cursor = 0; cursor < inptArray.size(); cursor++)
+    {
+        if (inptArray[cursor].token == 26 || inptArray[cursor].token == 28 || inptArray[cursor].token == 30)//括号([{对称
+            bracketNest.push_back(inptArray[cursor].token);//左括号入栈
+        if (inptArray[cursor].token == 27 || inptArray[cursor].token == 29 || inptArray[cursor].token == 31)//右括号和最新左括号正确对应，出栈
+            if (bracketNest.back() == inptArray[cursor].token - 1)
+                bracketNest.pop_back();
+            else
+            {
+                cout << "错误！右括号和最近左括号并不正确对应";
+                validSyntaxFlag = false;
+            }
+        if (inptArray[cursor].token == 10)//检测非法字符，基于除string外都容不下非法字符，其必定落入参数名
+        {
+            for(int idCursor=0;idCursor<inptArray[cursor].word.size();idCursor++)
+                if (!(inptArray[cursor].word[idCursor] >= 48 || inptArray[cursor].word[idCursor] <= 57 ||//存在非数字
+                    inptArray[cursor].word[idCursor] >= 65 || inptArray[cursor].word[idCursor] <= 90 ||//或非大写字母
+                    inptArray[cursor].word[idCursor] >= 97 || inptArray[cursor].word[idCursor] <= 122))//或非小写字母
+                {
+                    cout << "错误！存在非法字符";
+                    validSyntaxFlag = false;
+                }
+                else if(idCursor == 0 && (inptArray[cursor].word[idCursor] >= 30 || inptArray[cursor].word[idCursor] <= 39))
+                {
+                    cout << "错误！参数名不能以数字为先";
+                    validSyntaxFlag = false;
+                }
+        }
+    }
+
+   
+    return validSyntaxFlag;
+}
 
 int main()
 {
@@ -137,29 +174,36 @@ int main()
     sourceCodeFile.open("sourceCode.txt");
     if (!sourceCodeFile.is_open())
     {
-        cout << "无法打开源代码文件";
+        cout << "错误！无法打开源代码文件";
         return 0;
     }
     string inpt, curReading;
     vector<wordCells>optArray, tempArray;
-    int cursor = 0 ,CommentFlag = 0;
+    int cursor = 0 ,statusFlag = 0;
     while (getline(sourceCodeFile, inpt))//逐行读入文件
     {
         cursor = 0;//换行重置光标
         while (cursor <= inpt.size())
         {
-            if ((inpt[cursor] == ' ' || cursor == inpt.size()) && !CommentFlag)//如果是空格或读完，送去编码，注释后无视
+            curReading.push_back(inpt[cursor]);//逐字读入
+            if ((inpt[cursor] == ' ' || cursor == inpt.size()) && !statusFlag)//如果是空格或读完，送去编码，注释后无视
             {
+                if(inpt[cursor] == ' ' )
+                    curReading.pop_back();//推出空格
                 tempArray = wordCodePend(curReading);
                 if (tempArray.back().token < 0)//进入注释状态
                 {
-                    CommentFlag == tempArray.back().token;
+                    statusFlag == tempArray.back().token;//-1 or -2
                     tempArray.erase(tempArray.end() - 1);
+                }
+                if (tempArray.back().token == 50)//进入读String状态
+                {
+                    statusFlag == 1;
                 }
                 optArray.insert(optArray.end(), tempArray.begin(), tempArray.end());
                 curReading.clear();
             }
-            else if(CommentFlag==-2 && inpt[cursor]=='/')//是/*  */注释
+            else if (statusFlag == -2 && inpt[cursor] == '/')//是/*  */注释    **注释内没有string, string内能有注释**
             {
                 if (inpt[cursor - 1] == '*')
                 {
@@ -167,15 +211,26 @@ int main()
                     return 0;
                 }
                 else if (inpt[cursor + 1] == '*')//退出注释状态
-                    CommentFlag = 0;
+                    statusFlag = false;
             }
-            else
-                curReading += inpt[cursor];
+            else if(statusFlag == 1)//如果在读string状态
+            {
+                optArray[optArray.size() - 1].word.push_back(inpt[cursor]);//任何文本推入string
+                if (inpt[cursor] == '\"')//再读到引号，退出string状态
+                    statusFlag == false;
+            }
             cursor++;
         }
-    if (CommentFlag && inpt[cursor] == '\n')//换行时取消注释状态
-        CommentFlag == false;
+    if (cursor==inpt.size()+1)//加1为对冲上两行的 cursor++
+        if(statusFlag == -1)//换行时取消注释状态,/* */除外
+            statusFlag == false;
+        else if(statusFlag == 1)
+        { 
+            cout << "错误！引号直到换行仍然不对称";
+            return 0;
+        }
     }
     for (int i = 0; i < optArray.size(); i++)
         cout << "{" << optArray[i].token << "," << optArray[i].word << "}";
 }
+
