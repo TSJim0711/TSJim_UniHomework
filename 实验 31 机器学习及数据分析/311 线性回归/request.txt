@@ -1,0 +1,17 @@
+基于California Housing Prices数据集，完成关于房价预测的线性回归模型训练、测试与评估。
+1 准备数据集并认识数据
+下载California Housing Prices数据集https://www.kaggle.com/camnugent/california-housing-prices
+了解数据集各个维度特征及预测值的含义
+
+2 探索数据并预处理数据
+	观察数据集各个维度特征及预测值的数值类型与分布
+	预处理各维度特征（如将类别型维度ocean_proximity转换为one-hot形式的数值数据），参考：https://blog.csdn.net/SanyHo/article/details/105304292
+	划分70%的样本作为训练数据集，30%的样本作为测试数据集
+
+3 求解模型参数
+	编程实现线性回归模型的闭合形式参数求解
+	编程实现线性回归模型的梯度下降参数优化
+
+4 测试和评估模型
+ 	在测试数据集上计算所训练模型的R2指标
+ 
