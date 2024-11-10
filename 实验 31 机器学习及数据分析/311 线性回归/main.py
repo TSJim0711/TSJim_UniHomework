@@ -11,20 +11,18 @@ data=data.dropna() #drop column with empty cell
 dataEncoded=pd.get_dummies(data)
 trainSet, testSet=train_test_split(dataEncoded, test_size=0.3, random_state=42)
 
-
-
 X=np.matrix(trainSet.drop(columns=['median_house_value']).values) #convert to matrix
 Y=np.transpose(np.matrix(trainSet['median_house_value'].values))#rotate Y from 1*n to n*1
 XTest=np.matrix(testSet.drop(columns=['median_house_value']).values)
-YTest=np.matrix(testSet['median_house_value'].values)
-
-print("X:",X)
-print("Y:",XTest)
+YTest=np.transpose(np.matrix(testSet['median_house_value'].values))
 
 #特征缩放
 sigma = np.std(X, axis=0)#X的每列标准差
 mu=np.mean(X,axis=0)#X的每列平均
 X=(X-mu)/sigma
+sigma = np.std(XTest, axis=0)#X的每列标准差
+mu=np.mean(XTest,axis=0)#X的每列平均
+XTest=(XTest-mu)/sigma
 
 #引入偏置项
 X = np.c_[(np.ones(X.shape[0]), X)]
@@ -45,14 +43,47 @@ for i in range(iteration):#梯度下降
 
 theta1=np.linalg.inv(X.T@X)@X.T@Y
 
-#打印图表
+def R_2(X_test,y_test,theta):
+
+    y_pred=X_test*theta
+    mu=np.mean(y_test,axis=0)
+    SSE=np.sum(np.power(y_test-y_pred,2))
+    SSR=np.sum(np.power(y_pred-mu,2))
+    SST=SSR+SSE
+    r_2=1-SSE/SST
+    return r_2
+
+print("Test Set TDXJ R2:")
+print(R_2(XTest,YTest,theta))
+print("Train Set TDXJ R2:")
+print(R_2(X,Y,theta))
+print("Test Set ZGFC R2:")
+print(R_2(XTest,YTest,theta1))
+print("Train Set ZGFC R2:")
+print(R_2(X,Y,theta1))
+
+def costfun(theta, X=X, Y=Y):
+    h_x=X@theta
+    inner=np.sum(np.power(h_x-Y,2))
+    return inner/(2*Y.size)
+
+print("TDXJ cost:")
+print(costfun(theta))
+print("ZGFC cost:")
+print(costfun(theta1))
+
+temp=data.copy()
+corr=temp.corr()
+score=corr['median_house_value'].sort_values()
+print(score)
+
+#打印图表：梯度下降的代价值变化
 # Plot the array
 plt.plot(J, marker='.')
+plt.title('TDXJ iterative values')
+# Label
+plt.xlabel('Try Count')
+plt.ylabel('Cost')
 
-# Add labels and title
-plt.xlabel('Index')
-plt.ylabel('Value')
-plt.title('Line Chart of 1x20 Array')
-
-# Display the plot
+# Display plot
 plt.show()
