@@ -63,3 +63,41 @@ recall=(TP)/(TP+FN)
 print(recall)
 print("F1-score")
 print(2*(precs*recall)/(precs+recall))
+
+###朴素贝叶斯###
+X=np.array(trainSet.iloc[:,:-1])
+y=np.array(trainSet.iloc[:,-1])
+XTest=np.array(testSet.iloc[:,:-1])
+yTest=np.array(testSet.iloc[:,-1])
+
+# 朴素贝叶斯模型
+classes = np.unique(y)  #获取所有类别，当中，y只有1（是Iris-virginica）/0（不是Iris-virginica）
+n_classes = len(classes)  # 类别数量，当中，y只有两个：1或0
+n_samples= n_features = X.shape[1]  # 几个参数？4个
+
+# 初始化存储先验概率、均值和方差的数组
+prior = np.zeros(n_classes, dtype=np.float64)  # 每个类别先验
+mean = np.zeros((n_classes, n_features), dtype=np.float64)  # 特征在类别的平均
+var = np.zeros((n_classes, n_features), dtype=np.float64)  # 特征在类别的方差
+
+print(enumerate(classes))
+
+for idx, c in enumerate(classes): #idx->0开始，c=classes[idx],统计y所有属于0 or 1的
+    X_c = X[y == c]#选中所有结果是0（第二次是1）的X里面的4个参数
+    prior[idx] = X_c.shape[0] / n_samples#先验
+    mean[idx, :] = np.mean(X_c, axis=0)#平均值，每一个参数在0（不是Iris-virginica）的平均值，下一回for就是1
+    var[idx, :] = np.var(X_c, axis=0)#方差 同上^^^^
+
+yPred=[]#预测结果
+for x in XTest:#取测试数据参数
+    for idx, c in enumerate(classes):#idx->0开始，c=classes[idx],统计y所有属于0 or 1的
+        yCuzX =[]#y因X概率 后验
+        #估计后验
+        log_prior = np.log(prior[idx])#先验概率的对数 log(P(Y=c))
+        numerator = np.exp(-((x - mean[idx]) ** 2) / (2 * var[idx]))  # 高斯分布分子
+        denominator = np.sqrt(2 * np.pi * var[idx])  # 高斯分布分母  \(? . ? )/
+        log_conditional = np.sum(np.log(numerator / denominator))# 计算条件概率的对数 log(P(x|Y=c))，对每个特征求和
+        yCuzX.append(log_prior + log_conditional)# 后验概率的对数 log(P(Y=c|X)) = log(P(Y=c)) + log(P(X|Y=c))
+        
+    yPred.append(classes[np.argmax(yCuzX)])#取最大后验概率作判断
+yPred = np.array(yPred)  #NumPy数组好像兼容更好？
