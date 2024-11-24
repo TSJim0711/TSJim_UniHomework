@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 
-data = pd.read_csv("housing.csv")
+data = pd.read_csv("source.csv")
 ocean_proximity_map={"INLAND":0,"<1H OCEAN":1,"NEAR OCEAN ":2,"NEAR BAY":3,"ISLAND":4}
 data['ocean_proximity']=data['ocean_proximity'].map(ocean_proximity_map)#ocean_proximity hot-one encode
 data=data.dropna() #drop column with empty cell

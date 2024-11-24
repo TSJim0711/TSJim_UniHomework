@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-data=pd.read_csv("bezdekIris.data")
+data=pd.read_csv("source.data")
 is_targ_map={"Iris-setosa":0,"Iris-virginica":1,"Iris-versicolor":0}#convert data to Is Iris-virginica? true/false
 data.iloc[:,-1]=data.iloc[:,-1].map(is_targ_map)#ocean_proximity hot-one encode
 data=data.dropna() #drop column with empty cell
@@ -50,7 +50,7 @@ for i in range (XTest.shape[0]):  #把阈值提升到0.85， 可以让Precision�
     elif yPred[i] < 0.5 and yTest[i] == 1:
         FN += 1
         
-print("逻辑回归模型的梯度下降参数求解:")
+print("Descent:")
 print("Accuracy")
 print((TP+TN)/(TP+FP+TN+FN))
 print("Precision")#预测是Iris-virginica，实际就是Iris-virginica比例
@@ -110,7 +110,7 @@ for i in range (XTest.shape[0]):
     else:
         print(yTest[i])
 
-print("朴素贝叶斯参数统计:")
+print("\nNaive Bayes:")
 print("Accuracy")
 print((TP+TN)/(TP+FP+TN+FN))
 print("Precision")#预测是Iris-virginica，实际就是Iris-virginica比例
