@@ -40,7 +40,7 @@ FN = 0  # 误判不是
 #对test set 计算
 yPred=[]
 yPred=sigmoid(XTest@theta)
-for i in range (XTest.shape[0]):
+for i in range (XTest.shape[0]):  #把阈值提升到0.85， 可以让Precision提升到84%左右....
     if yPred[i] >= 0.5 and yTest[i] == 1:
         TP += 1
     elif yPred[i] >= 0.5 and yTest[i] == 0:
@@ -49,10 +49,8 @@ for i in range (XTest.shape[0]):
         TN += 1
     elif yPred[i] < 0.5 and yTest[i] == 1:
         FN += 1
-    else:
-        print(yTest[i])
         
-
+print("逻辑回归模型的梯度下降参数求解:")
 print("Accuracy")
 print((TP+TN)/(TP+FP+TN+FN))
 print("Precision")#预测是Iris-virginica，实际就是Iris-virginica比例
@@ -80,8 +78,6 @@ prior = np.zeros(n_classes, dtype=np.float64)  # 每个类别先验
 mean = np.zeros((n_classes, n_features), dtype=np.float64)  # 特征在类别的平均
 var = np.zeros((n_classes, n_features), dtype=np.float64)  # 特征在类别的方差
 
-print(enumerate(classes))
-
 for idx, c in enumerate(classes): #idx->0开始，c=classes[idx],统计y所有属于0 or 1的
     X_c = X[y == c]#选中所有结果是0（第二次是1）的X里面的4个参数
     prior[idx] = X_c.shape[0] / n_samples#先验
@@ -90,8 +86,8 @@ for idx, c in enumerate(classes): #idx->0开始，c=classes[idx],统计y所有�
 
 yPred=[]#预测结果
 for x in XTest:#取测试数据参数
+    yCuzX =[]#y因X概率 后验
     for idx, c in enumerate(classes):#idx->0开始，c=classes[idx],统计y所有属于0 or 1的
-        yCuzX =[]#y因X概率 后验
         #估计后验
         log_prior = np.log(prior[idx])#先验概率的对数 log(P(Y=c))
         numerator = np.exp(-((x - mean[idx]) ** 2) / (2 * var[idx]))  # 高斯分布分子
@@ -101,3 +97,27 @@ for x in XTest:#取测试数据参数
         
     yPred.append(classes[np.argmax(yCuzX)])#取最大后验概率作判断
 yPred = np.array(yPred)  #NumPy数组好像兼容更好？
+
+for i in range (XTest.shape[0]):
+    if yPred[i] >= 0.5 and yTest[i] == 1:
+        TP += 1
+    elif yPred[i] >= 0.5 and yTest[i] == 0:
+        FP += 1
+    elif yPred[i] < 0.5 and yTest[i] == 0:
+        TN += 1
+    elif yPred[i] < 0.5 and yTest[i] == 1:
+        FN += 1
+    else:
+        print(yTest[i])
+
+print("朴素贝叶斯参数统计:")
+print("Accuracy")
+print((TP+TN)/(TP+FP+TN+FN))
+print("Precision")#预测是Iris-virginica，实际就是Iris-virginica比例
+precs=(TP)/(TP+FP)
+print(precs)
+print("Recall")#所有实际就是Iris-virginica，被正确预测为Iris-virginica的比例
+recall=(TP)/(TP+FN)
+print(recall)
+print("F1-score")
+print(2*(precs*recall)/(precs+recall))
