@@ -2,11 +2,20 @@
 #include <vector>
 #include <string>
 using namespace std;
+
 struct dfsReturnKit
 {
     vector<vector<vector<int>>>playboardHistory;
     vector<char>route;
 };
+
+struct treeNode
+{
+    vector<vector<int>> curPlayBoard;
+    int zeroLoc[2];
+    string route;
+};
+
 vector<vector<int>>playboardTarg = { {1,2,3},{4,0,5},{6,7,8} };
 
 dfsReturnKit dfs(vector<vector<vector<int>>>playboardHistory, vector<char> route, int depth)
@@ -25,9 +34,9 @@ dfsReturnKit dfs(vector<vector<vector<int>>>playboardHistory, vector<char> route
         depth++;
         //避免LOOP
         for (int i = 0; i < playboardHistory.size() - 1/*不对最后一个(目前)判断*/; i++)
-            if (playboardHistory.back() == playboardHistory[i]||depth>50)//与历史重复，，代表此路不通
+            if (playboardHistory.back() == playboardHistory[i]||depth>35)//与历史重复，，代表此路不通
             {
-                if(depth>50)
+                if(depth>35)
                     cout << "过深! ";
                 else
                     cout << "LOOP! ";
@@ -111,20 +120,88 @@ dfsReturnKit dfs(vector<vector<vector<int>>>playboardHistory, vector<char> route
         return rtrnKit;
     }
 }
-int main()
+
+string bfs(vector<vector<int>> playBoard)
 {
-    //定义
-    vector<vector<int>>playboard;
-    playboard.push_back({1,2,3});
-    playboard.push_back({4,5,6});
-    playboard.push_back({7,0,8});
-    cout<<"START ";
-    //dfs search
-    vector<char> route;
-    dfsReturnKit dfsRtrn=dfs({playboard}, route,0);
-    for (int i = 0; i < dfsRtrn.route.size(); i++)
+    vector <treeNode> procList = { {playBoard,{},""}};
+    vector <treeNode> procListTemp;
+    vector<vector<int>> playBrdtemp;
+    vector<vector<vector<int>>>playBoardHist;
+    for (int i = 0; i < 3; i++) {//寻找 0
+        for (int j = 0; j < 3; j++) {
+            if (procList[0].curPlayBoard[i][j] == 0)//找到0(空格)的位置,记录
+            {
+                procList[0].zeroLoc[0] = i;
+                procList[0].zeroLoc[1] = j;
+            }
+        }
+    }
+    for (int depth = 0; depth < 50; depth++)
     {
-        cout << (dfsRtrn.route[i]=='U' ?"上,": (dfsRtrn.route[i] == 'R' ? "右," : (dfsRtrn.route[i] == 'D' ? "下," : (dfsRtrn.route[i] == 'L' ? "左," : (dfsRtrn.route[i] == '#' ? "成功!" : to_string(dfsRtrn.route[i]))))));
+        cout << "深度：" << depth << endl;
+        for (int x = 0; x < procList.size(); x++)//根据上回的行动栈逐一处理
+        {
+            for (int histIndex = 0; histIndex < playBoardHist.size(); histIndex++)
+                if (procList[x].curPlayBoard == playBoardHist[histIndex])//是否与历史结果重复
+                {
+                    goto skipCurBoard;//想退出双重循环只能用goto了,无视当前棋盘
+                }
+            if(playBoardHist.size()< procList.size()/2+1)
+                playBoardHist.push_back(procList[x].curPlayBoard);//新棋盘状态，推入历史
+
+            if (procList[x].curPlayBoard == playboardTarg)
+                return procList[x].route;//如果是结果，返回路径。
+            if (procList[x].zeroLoc[0] > 0)//going up
+            {
+                playBrdtemp = procList[x].curPlayBoard;
+                playBrdtemp[procList[x].zeroLoc[0]][procList[x].zeroLoc[1]] = playBrdtemp[procList[x].zeroLoc[0] - 1][procList[x].zeroLoc[1]];//与上面格交换
+                playBrdtemp[procList[x].zeroLoc[0] - 1][procList[x].zeroLoc[1]] = 0;
+                procListTemp.push_back({ playBrdtemp , {procList[x].zeroLoc[0] - 1,procList[x].zeroLoc[1]}, procList[x].route + 'U' });//把下一步棋盘和该路径推入临时行动栈
+            }
+            if (procList[x].zeroLoc[1] < 2)
+            {
+                playBrdtemp = procList[x].curPlayBoard;
+                playBrdtemp[procList[x].zeroLoc[0]][procList[x].zeroLoc[1]] = playBrdtemp[procList[x].zeroLoc[0]][procList[x].zeroLoc[1] + 1];
+                playBrdtemp[procList[x].zeroLoc[0]][procList[x].zeroLoc[1] + 1] = 0;
+                procListTemp.push_back({ playBrdtemp,{procList[x].zeroLoc[0],procList[x].zeroLoc[1] + 1}, procList[x].route + 'R' });
+            }
+            if (procList[x].zeroLoc[0] < 2)
+            {
+                playBrdtemp = procList[x].curPlayBoard;
+                playBrdtemp[procList[x].zeroLoc[0]][procList[x].zeroLoc[1]] = playBrdtemp[procList[x].zeroLoc[0] + 1][procList[x].zeroLoc[1]];
+                playBrdtemp[procList[x].zeroLoc[0] + 1][procList[x].zeroLoc[1]] = 0;
+                procListTemp.push_back({ playBrdtemp,{procList[x].zeroLoc[0] + 1,procList[x].zeroLoc[1]}, procList[x].route + 'D' });
+            }if (procList[x].zeroLoc[1] > 0)
+            {
+                playBrdtemp = procList[x].curPlayBoard;
+                playBrdtemp[procList[x].zeroLoc[0]][procList[x].zeroLoc[1]] = playBrdtemp[procList[x].zeroLoc[0]][procList[x].zeroLoc[1] - 1];
+                playBrdtemp[procList[x].zeroLoc[0]][procList[x].zeroLoc[1] - 1] = 0;
+                procListTemp.push_back({ playBrdtemp,{procList[x].zeroLoc[0],procList[x].zeroLoc[1] - 1}, procList[x].route + 'L' });
+            }
+        skipCurBoard:
+            x = x;
+        }
+        procList = procListTemp;//把所有可能的步骤推入行动栈
+        procListTemp.clear();
+    }
+}
+
+    int main()
+    {
+        //定义
+        vector<vector<int>>playboard;
+        playboard.push_back({ 2,8,3 });
+        playboard.push_back({ 1,6,4 });
+        playboard.push_back({ 7,0,5 });
+        cout << "START ";
+        //dfs search
+        string route;
+        vector<char> route1;
+        //dfsReturnKit dfsRtrn=dfs({playboard}, route1,0);
+        route = bfs(playboard);
+        for (int i = 0; i < route.size(); i++)
+        {
+            cout << (route[i] == 'U' ? "上," : (route[i] == 'R' ? "右," : (route[i] == 'D' ? "下," : (route[i] == 'L' ? "左," : (route[i] == '#' ? "成功!" : to_string(route[i]))))));
+        }
     }
 
-}
