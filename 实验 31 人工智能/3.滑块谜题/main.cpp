@@ -11,7 +11,7 @@ struct dfsReturnKit
 
 struct treeNode
 {
-    vector<vector<int>> curPlayBoard;
+    string curPlayBoard;
     int zeroLoc[2];
     string route;
 };
@@ -34,9 +34,9 @@ dfsReturnKit dfs(vector<vector<vector<int>>>playboardHistory, vector<char> route
         depth++;
         //避免LOOP
         for (int i = 0; i < playboardHistory.size() - 1/*不对最后一个(目前)判断*/; i++)
-            if (playboardHistory.back() == playboardHistory[i]||depth>35)//与历史重复，，代表此路不通
+            if (playboardHistory.back() == playboardHistory[i]||depth>20)//与历史重复，，代表此路不通
             {
-                if(depth>35)
+                if(depth>20)
                     cout << "过深! ";
                 else
                     cout << "LOOP! ";
@@ -121,19 +121,27 @@ dfsReturnKit dfs(vector<vector<vector<int>>>playboardHistory, vector<char> route
     }
 }
 
-string bfs(vector<vector<int>> playBoard)
+string bfs(vector<vector<int>> vecPlayBoard)
 {
+    string playBoard;
+    for (int x = 0; x < vecPlayBoard.size(); x++)
+        for (int y = 0; y < vecPlayBoard[0].size(); y++)
+            playBoard.push_back(48+vecPlayBoard[x][y]);
+
+    string playBoardTargStr;
+    for (int x = 0; x < vecPlayBoard.size(); x++)
+        for (int y = 0; y < vecPlayBoard[0].size(); y++)
+            playBoardTargStr.push_back(48+playboardTarg[x][y]);
+
     vector <treeNode> procList = { {playBoard,{},""}};
     vector <treeNode> procListTemp;
-    vector<vector<int>> playBrdtemp;
-    vector<vector<vector<int>>>playBoardHist;
-    for (int i = 0; i < 3; i++) {//寻找 0
-        for (int j = 0; j < 3; j++) {
-            if (procList[0].curPlayBoard[i][j] == 0)//找到0(空格)的位置,记录
-            {
-                procList[0].zeroLoc[0] = i;
-                procList[0].zeroLoc[1] = j;
-            }
+    string playBrdtemp;
+    vector<string>playBoardHist;
+    for (int i = 0; i < playBoard.size(); i++) {//寻找 0
+        if (playBoard[i]=='0')//找到0(空格)的位置,记录
+        {
+            procList.back().zeroLoc[0] = i / 3;
+            procList.back().zeroLoc[1] = i % 3;
         }
     }
     for (int depth = 0; depth < 50; depth++)
@@ -146,37 +154,32 @@ string bfs(vector<vector<int>> playBoard)
                 {
                     goto skipCurBoard;//想退出双重循环只能用goto了,无视当前棋盘
                 }
-            if(playBoardHist.size()< procList.size()/2+1)
-                playBoardHist.push_back(procList[x].curPlayBoard);//新棋盘状态，推入历史
+            playBoardHist.push_back(procList[x].curPlayBoard);//新棋盘状态，推入历史
 
-            if (procList[x].curPlayBoard == playboardTarg)
+            if (procList[x].curPlayBoard == playBoardTargStr)
                 return procList[x].route;//如果是结果，返回路径。
             if (procList[x].zeroLoc[0] > 0)//going up
             {
-                playBrdtemp = procList[x].curPlayBoard;
-                playBrdtemp[procList[x].zeroLoc[0]][procList[x].zeroLoc[1]] = playBrdtemp[procList[x].zeroLoc[0] - 1][procList[x].zeroLoc[1]];//与上面格交换
-                playBrdtemp[procList[x].zeroLoc[0] - 1][procList[x].zeroLoc[1]] = 0;
-                procListTemp.push_back({ playBrdtemp , {procList[x].zeroLoc[0] - 1,procList[x].zeroLoc[1]}, procList[x].route + 'U' });//把下一步棋盘和该路径推入临时行动栈
+                procListTemp.push_back({ procList[x].curPlayBoard , {procList[x].zeroLoc[0] - 1,procList[x].zeroLoc[1]}, procList[x].route + 'U' });//把下一步棋盘和该路径推入临时行动栈
+                procListTemp.back().curPlayBoard[(procList[x].zeroLoc[0]) * 3 + procList[x].zeroLoc[1]] = procListTemp.back().curPlayBoard[(procList[x].zeroLoc[0] - 1) * 3 + procList[x].zeroLoc[1]];//与上面格交换
+                procListTemp.back().curPlayBoard[(procList[x].zeroLoc[0] - 1) * 3 + procList[x].zeroLoc[1]] = 48;
             }
             if (procList[x].zeroLoc[1] < 2)
             {
-                playBrdtemp = procList[x].curPlayBoard;
-                playBrdtemp[procList[x].zeroLoc[0]][procList[x].zeroLoc[1]] = playBrdtemp[procList[x].zeroLoc[0]][procList[x].zeroLoc[1] + 1];
-                playBrdtemp[procList[x].zeroLoc[0]][procList[x].zeroLoc[1] + 1] = 0;
-                procListTemp.push_back({ playBrdtemp,{procList[x].zeroLoc[0],procList[x].zeroLoc[1] + 1}, procList[x].route + 'R' });
+                procListTemp.push_back({ procList[x].curPlayBoard,{procList[x].zeroLoc[0],procList[x].zeroLoc[1] + 1}, procList[x].route + 'R' });
+                procListTemp.back().curPlayBoard[(procList[x].zeroLoc[0]) * 3 +procList[x].zeroLoc[1]] = procListTemp.back().curPlayBoard[(procList[x].zeroLoc[0]) * 3 +procList[x].zeroLoc[1] + 1];
+                procListTemp.back().curPlayBoard[(procList[x].zeroLoc[0]) * 3 +procList[x].zeroLoc[1] + 1] = 48;
             }
             if (procList[x].zeroLoc[0] < 2)
             {
-                playBrdtemp = procList[x].curPlayBoard;
-                playBrdtemp[procList[x].zeroLoc[0]][procList[x].zeroLoc[1]] = playBrdtemp[procList[x].zeroLoc[0] + 1][procList[x].zeroLoc[1]];
-                playBrdtemp[procList[x].zeroLoc[0] + 1][procList[x].zeroLoc[1]] = 0;
-                procListTemp.push_back({ playBrdtemp,{procList[x].zeroLoc[0] + 1,procList[x].zeroLoc[1]}, procList[x].route + 'D' });
+                procListTemp.push_back({ procList[x].curPlayBoard,{procList[x].zeroLoc[0] + 1,procList[x].zeroLoc[1]}, procList[x].route + 'D' });
+                procListTemp.back().curPlayBoard[(procList[x].zeroLoc[0]) * 3 +procList[x].zeroLoc[1]] = procListTemp.back().curPlayBoard[(procList[x].zeroLoc[0]+1) * 3 +procList[x].zeroLoc[1]];
+                procListTemp.back().curPlayBoard[(procList[x].zeroLoc[0]+1) * 3 +procList[x].zeroLoc[1]] = 48;
             }if (procList[x].zeroLoc[1] > 0)
             {
-                playBrdtemp = procList[x].curPlayBoard;
-                playBrdtemp[procList[x].zeroLoc[0]][procList[x].zeroLoc[1]] = playBrdtemp[procList[x].zeroLoc[0]][procList[x].zeroLoc[1] - 1];
-                playBrdtemp[procList[x].zeroLoc[0]][procList[x].zeroLoc[1] - 1] = 0;
-                procListTemp.push_back({ playBrdtemp,{procList[x].zeroLoc[0],procList[x].zeroLoc[1] - 1}, procList[x].route + 'L' });
+                procListTemp.push_back({ procList[x].curPlayBoard,{procList[x].zeroLoc[0],procList[x].zeroLoc[1] - 1}, procList[x].route + 'L' });
+                procListTemp.back().curPlayBoard[(procList[x].zeroLoc[0]) * 3 +procList[x].zeroLoc[1]] = procListTemp.back().curPlayBoard[(procList[x].zeroLoc[0]) * 3 +procList[x].zeroLoc[1] - 1];
+                procListTemp.back().curPlayBoard[(procList[x].zeroLoc[0]) * 3 +procList[x].zeroLoc[1] - 1] = 48;
             }
         skipCurBoard:
             x = x;
